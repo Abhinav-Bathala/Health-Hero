@@ -5,23 +5,23 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Home">
 
     <ImageView
-        android:id="@+id/background_splash"
+        android:id="@+id/background_login"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/screenshot_2025_03_13_143627__1_"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/screenshot_2025_03_13_143627__1_" />
 
     <ImageView
-        android:id="@+id/logo_splash"
+        android:id="@+id/logo_login"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintWidth_percent="0.8"
@@ -34,39 +34,12 @@
         app:layout_constraintVertical_bias="0.06"
         app:srcCompat="@drawable/image_removebg_preview" />
 
-    <TextView
-        android:id="@+id/welcome_splash"
-        android:layout_width="197dp"
-        android:layout_height="27dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fontFamily="@font/orbitron_medium"
-        android:text="@string/welcome_to_healthhero"
-        android:textColor="@color/white"
-        tools:layout_editor_absoluteX="107dp"
-        tools:layout_editor_absoluteY="368dp" />
-
     <Button
-        android:id="@+id/signup_splash"
-        android:layout_width="275dp"
-        android:layout_height="65dp"
-        android:backgroundTint="#7C8FEA"
-        android:color="@color/white"
-        android:text="Sign Up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
-
-    <Button
-        android:id="@+id/login_splash"
+        android:id="@+id/logout"
         android:layout_width="275dp"
         android:layout_height="65dp"
         android:backgroundTint="#FBF5F5"
-        android:text="Login"
+        android:text="Logout"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,5 +47,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.708" />
+
+
+    <TextView
+        android:id="@+id/user_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/orbitron_medium"
+        android:text="user"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.531" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
