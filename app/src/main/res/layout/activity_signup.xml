@@ -39,6 +39,7 @@
         android:layout_width="275dp"
         android:layout_height="65dp"
         android:backgroundTint="#FBF5F5"
+        android:onClick="buttonGoogleSignIn"
         android:text="     Continue with Google"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
