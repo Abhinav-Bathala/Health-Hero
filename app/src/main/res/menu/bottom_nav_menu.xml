@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/profile"
+        android:title="Profile"
+        android:icon="@drawable/home" />
+
+    <item
+        android:id="@+id/nutrition"
+        android:title="Nutrition"
+        android:icon="@drawable/nutrition" />
+
+    <item
+        android:id="@+id/leaderboard"
+        android:title="Leaderboard"
+        android:icon="@drawable/leaderboard" />
+
+    <item
+        android:id="@+id/fitness"
+        android:title="Fitness Goal"
+        android:icon="@drawable/fitness_goal" />
+
+
+    <item
+        android:id="@+id/workouts"
+        android:title="Workouts"
+        android:icon="@drawable/workouts" />
+
+
+</menu>

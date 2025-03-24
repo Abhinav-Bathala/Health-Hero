@@ -30,6 +30,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -49,8 +52,17 @@ dependencies {
 
 
     implementation(libs.circleimageview)
+
+
+    // Import the BoM for the Firebase platform
     implementation(libs.firebase.bom)
-    implementation ("com.google.android.gms:play-services-auth:21.3.0")
 
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation(libs.google.firebase.auth)
 
+    // Also add the dependencies for the Credential Manager libraries and specify their versions
+    implementation(libs.credentials.v130)
+    implementation(libs.credentials.play.services.auth.v150)
+    implementation(libs.googleid)
 }

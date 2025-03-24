@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,6 +32,7 @@ public class Login extends AppCompatActivity {
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     TextView textView;
+    Button backbutton_login;
 
     @Override
     public void onStart() {
@@ -45,6 +47,7 @@ public class Login extends AppCompatActivity {
     }
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,13 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
+        });
+
+        backbutton_login = findViewById(R.id.backbutton_login);
+        backbutton_login.setOnClickListener(view -> {
+            Intent intent = new Intent(Login.this, MainActivity.class);
+            startActivity(intent);
+
         });
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
@@ -106,15 +116,6 @@ public class Login extends AppCompatActivity {
                                 }
                             }
                         });
-
-
-
-
-
-
-
-
-
 
 
             }
