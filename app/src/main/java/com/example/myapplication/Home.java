@@ -53,6 +53,7 @@ public class Home extends AppCompatActivity {
 
         // Set the initial fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, profileFragment).commit();
+        bottomNavigationView.setSelectedItemId(R.id.profile);  // Replace with your actual menu item ID
 
         // Handle BottomNavigationView item selection
         bottomNavigationView.setOnItemSelectedListener(item -> {
