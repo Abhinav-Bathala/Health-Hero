@@ -1,42 +1,179 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
-
-
-
-
+    <!-- Profile Image -->
     <ImageView
         android:id="@+id/imageView_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/image_removebg_preview"
-        android:layout_gravity="center_horizontal"
-        android:translationY="50dp"/>
-
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="275dp"
-        android:layout_height="65dp"
-        android:backgroundTint="#FBF5F5"
-        android:text="Logout"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.477"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.708"
-        android:layout_gravity="center_horizontal"
-        android:translationY="500dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp" />
+
+    <!-- Welcome Text (below profile image) -->
+    <TextView
+        android:id="@+id/welcometext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/orbitron_medium"
+        android:text="WELCOME _____ !"
+        android:textColor="@color/white"
+        android:textSize="50px"
+        app:layout_constraintTop_toBottomOf="@id/imageView_profile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+    <!-- Welcome Text (below profile image) -->
+    <TextView
+        android:id="@+id/quotetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/orbitron_medium"
+        android:text="- Insert inspirational quote"
+        android:textColor="@color/white"
+        android:textStyle="italic"
+        android:textSize="30px"
+        app:layout_constraintTop_toBottomOf="@id/welcometext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+    <!-- Progress Box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/progressCard"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/quotetext"
+        app:layout_constraintEnd_toStartOf="@id/rankingCard"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="30dp" >
 
 
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress:\n# lb"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Ranking Box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/rankingCard"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/quotetext"
+        app:layout_constraintStart_toEndOf="@id/progressCard"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="30dp" >
+
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ranking:\n#"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+    </androidx.cardview.widget.CardView>
+    <!-- Streak Box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/streakCard"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rankingCard"
+        app:layout_constraintEnd_toStartOf="@id/rankingCard"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="120dp" >
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Streak:\n# "
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Calorie Intake Box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/calorieCard"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rankingCard"
+        app:layout_constraintStart_toEndOf="@id/progressCard"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="120dp" >
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calorie Intake:\n__"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+    </androidx.cardview.widget.CardView>
+
+
+    <!-- Flex Box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/flexCard"
+        android:layout_width="377dp"
+        android:layout_height="192dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="120dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/calorieCard"
+        app:layout_constraintWidth_percent="0.45">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Flex box"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
+
+
+
+
+    <!-- User Details (below welcome text) -->
     <TextView
         android:id="@+id/user_details"
         android:layout_width="wrap_content"
@@ -44,32 +181,23 @@
         android:fontFamily="@font/orbitron_medium"
         android:text="user"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintTop_toBottomOf="@id/flexCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.531"
-        android:layout_gravity="center_horizontal"
-        android:translationY="350dp"
-        />
-
-    <TextView
-        android:id="@+id/welcometext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/orbitron_medium"
-        android:text="WELCOME"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.531"
-        android:layout_gravity="center_horizontal"
-        android:translationY="300dp"
-        android:textSize="50px"
-        />
+        android:layout_marginTop="8dp" />
 
-</FrameLayout>
+    <!-- Logout Button (at bottom) -->
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="275dp"
+        android:layout_height="65dp"
+        android:backgroundTint="#FBF5F5"
+        android:text="Logout"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/user_details"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop="15dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

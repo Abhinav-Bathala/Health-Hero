@@ -20,6 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@android:color/transparent" />
 
+
     <!-- Bottom Navigation View -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
