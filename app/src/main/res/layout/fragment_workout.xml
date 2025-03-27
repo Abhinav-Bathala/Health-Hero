@@ -1,24 +1,154 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".WorkoutFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Workout Title -->
     <TextView
-        android:id="@+id/textView_workout"
-        android:layout_width="wrap_content"
+        android:id="@+id/workoutTitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Workouts"
-        android:layout_gravity="center"/>
+        android:layout_marginTop="32dp"
+        android:text="Workout"
+        android:textAlignment="center"
+        android:textSize="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView_workout"
-        android:layout_width="wrap_content"
+    <!-- Workout Selector Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:id="@+id/workoutSelectorCard"
         android:layout_height="wrap_content"
-        android:src="@drawable/image_removebg_preview"
-        android:layout_gravity="center_horizontal"
-        android:translationY="50dp"/>
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@android:color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/workoutTitle">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Workout Selector"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <!-- Workout Type Selector -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Workout Type"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/workoutSelector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Reps Selector -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number of Reps"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/repsSelector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Sets Selector -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number of Sets"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/setsSelector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Checkbox for converting workout to points -->
+            <CheckBox
+                android:id="@+id/convertToPointsCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Convert to points"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="16dp"/>
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/submitWorkoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit Workout"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:paddingHorizontal="32dp"
+                android:paddingVertical="8dp"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Workout History Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@android:color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/workoutSelectorCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Workout History"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <!-- RecyclerView for workout history -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/workoutHistoryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scrollbars="vertical"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
