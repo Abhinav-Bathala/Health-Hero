@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class WorkoutFragment extends Fragment {
     private Spinner spinner1, spinner2, spinner3;
-    private Button submitButton;
+    private Button submitButton, clearButton;
     private RecyclerView recyclerView;
     private WorkoutAdapter workoutAdapter;
     private ArrayList<String> workoutHistory;
@@ -43,6 +43,7 @@ public class WorkoutFragment extends Fragment {
         spinner2 = view.findViewById(R.id.repsSelector);
         spinner3 = view.findViewById(R.id.setsSelector);
         submitButton = view.findViewById(R.id.submitWorkoutButton);
+        clearButton = view.findViewById(R.id.clearHistoryButton);
         recyclerView = view.findViewById(R.id.workoutHistoryRecyclerView);
 
         // Initialize lists
@@ -61,8 +62,22 @@ public class WorkoutFragment extends Fragment {
 
         // Handle Submit Button Click
         submitButton.setOnClickListener(v -> addWorkout());
+        clearButton.setOnClickListener(v -> clearWorkoutHistory());
 
         return view;
+    }
+    private void clearWorkoutHistory() {
+        // Clear ArrayList
+        workoutHistory.clear();
+        workoutAdapter.notifyDataSetChanged();
+
+        // Clear saved history from SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("WorkoutPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("workouts"); // Remove the workouts key
+        editor.apply(); // Apply changes
+
+        Toast.makeText(getActivity(), "Workout history cleared!", Toast.LENGTH_SHORT).show();
     }
 
     private void initializeWorkoutData() {
@@ -128,12 +143,13 @@ public class WorkoutFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences("WorkoutPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        Set<String> workoutSet = prefs.getStringSet("workouts", new HashSet<>());
+        Set<String> workoutSet = new HashSet<>(prefs.getStringSet("workouts", new HashSet<>()));
         workoutSet.add(workout);
 
         editor.putStringSet("workouts", workoutSet);
         editor.apply();
     }
+
 
     private void loadWorkouts() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("WorkoutPrefs", Context.MODE_PRIVATE);
