@@ -65,4 +65,5 @@ dependencies {
     implementation(libs.credentials.v130)
     implementation(libs.credentials.play.services.auth.v150)
     implementation(libs.googleid)
+
 }

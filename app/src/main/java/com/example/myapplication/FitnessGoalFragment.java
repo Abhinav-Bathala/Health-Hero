@@ -1,64 +1,73 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
-
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import com.example.myapplication.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FitnessGoalFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FitnessGoalFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RadioGroup goalRadioGroup;
+    private EditText etAge, etHeight, etWeight, etCaloricIntake;
+    private Spinner spinnerActivityLevel;
+    private Button btnSubmit;
 
     public FitnessGoalFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FitnessGoalFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FitnessGoalFragment newInstance(String param1, String param2) {
-        FitnessGoalFragment fragment = new FitnessGoalFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        super(R.layout.fragment_fitness_goal);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        goalRadioGroup = view.findViewById(R.id.goalRadioGroup);
+        etAge = view.findViewById(R.id.etAge);
+        etHeight = view.findViewById(R.id.etHeight);
+        etWeight = view.findViewById(R.id.etWeight);
+        etCaloricIntake = view.findViewById(R.id.etCaloricIntake);
+        spinnerActivityLevel = view.findViewById(R.id.spinnerActivityLevel);
+        btnSubmit = view.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener(v -> handleSubmit());
+    }
+
+    private void handleSubmit() {
+        // Get user input
+        int selectedGoalId = goalRadioGroup.getCheckedRadioButtonId();
+        String goal = selectedGoalId == R.id.radioBulk ? "Bulking" :
+                selectedGoalId == R.id.radioCut ? "Cutting" : "";
+
+        String age = etAge.getText().toString().trim();
+        String height = etHeight.getText().toString().trim();
+        String weight = etWeight.getText().toString().trim();
+        String caloricIntake = etCaloricIntake.getText().toString().trim();
+        String activityLevel = spinnerActivityLevel.getSelectedItem().toString();
+
+        // Input validation
+        if (goal.isEmpty() || age.isEmpty() || height.isEmpty() || weight.isEmpty() || caloricIntake.isEmpty()) {
+            Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fitness_goal, container, false);
+        // Convert values to appropriate types
+        int userAge = Integer.parseInt(age);
+        float userHeight = Float.parseFloat(height);
+        float userWeight = Float.parseFloat(weight);
+        int userCalories = Integer.parseInt(caloricIntake);
+
+        // Display a confirmation message
+        String message = "Goal: " + goal + "\nAge: " + userAge + "\nHeight: " + userHeight +
+                " cm\nWeight: " + userWeight + " kg\nActivity: " + activityLevel +
+                "\nCalories: " + userCalories;
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 }

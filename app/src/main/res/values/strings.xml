@@ -1,6 +1,12 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="welcome_to_healthhero">Welcome to HealthHero!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+<string name="app_name">My Application</string>
+<string name="welcome_to_healthhero">Welcome to HealthHero!</string>
+<!-- TODO: Remove or change this placeholder text -->
+<string name="hello_blank_fragment">Hello blank fragment</string>
+<string-array name="activity_levels">
+    <item>Sedentary</item>
+    <item>Lightly Active</item>
+    <item>Active</item>
+    <item>Very Active</item>
+</string-array>
 </resources>
