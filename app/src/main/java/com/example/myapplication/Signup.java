@@ -1,8 +1,11 @@
 package com.example.myapplication;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.credentials.CredentialManager;
 import android.credentials.GetCredentialRequest;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,12 +23,19 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Signup extends AppCompatActivity {
 
@@ -35,6 +45,9 @@ public class Signup extends AppCompatActivity {
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     TextView textView;
+
+    FirebaseFirestore fStore;
+    String userID;
 
 
     @Override
@@ -74,6 +87,7 @@ public class Signup extends AppCompatActivity {
     //Sign in Using Email and Password
 
     mAuth = FirebaseAuth.getInstance();
+    fStore = FirebaseFirestore.getInstance();
     editTextEmail = findViewById(R.id.email_signup);
     editTextPassword = findViewById(R.id.password_signup);
     buttonReg = findViewById(R.id.signup_signup);
@@ -115,8 +129,28 @@ public class Signup extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Toast.makeText(Signup.this, "Account Created.",
                                         Toast.LENGTH_SHORT).show();
+                                userID = mAuth.getCurrentUser().getUid();
+                                DocumentReference documentReference = fStore.collection("users").document(userID);
+                                Map<String, Object> user = new HashMap<>();
+                                user.put("email", email);
+
+                                documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.d(TAG, "onSuccess: user profile is created for" + userID);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "onFailure: " + e.toString());
+                                    }
+                                });
+                                Intent intent = new Intent(getApplicationContext(), Home.class);
+                                startActivity(intent);
+                                finish();
 
                             }
+
                             else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(Signup.this, "Authentication Failed.",
