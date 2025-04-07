@@ -137,13 +137,13 @@ public class WorkoutFragment extends Fragment {
 
     private int calculatePoints(String workout, int totalReps) {
         if (lowIntensity.contains(workout)) {
-            return 1;
+            return (1*totalReps);
         } else if (highIntensity.contains(workout)) {
-            return 2;
+            return (2*totalReps);
         } else if (strengthExercises.contains(workout)) {
             return (totalReps / 25);
         } else if (trainingExercises.contains(workout)) {
-            return 2;
+            return (2*totalReps);
         } else {
             return 0;
         }
