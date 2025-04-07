@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +22,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WorkoutFragment extends Fragment {
     private Spinner workoutSpinner;
@@ -28,8 +33,16 @@ public class WorkoutFragment extends Fragment {
     private RecyclerView recyclerView;
     private WorkoutAdapter workoutAdapter;
     private ArrayList<String> workoutHistory;
-
     private ArrayList<String> workoutArray;
+    private CheckBox convertToPointsCheckbox;
+    private TextView totalPointsText;
+
+    private int totalPoints = 0;
+
+    private final Set<String> lowIntensity = new HashSet<>(Arrays.asList("Walking", "Other low-intensity exercise"));
+    private final Set<String> highIntensity = new HashSet<>(Arrays.asList("Jogging", "Cycling", "Rowing", "Elliptical", "Other high-intensity exercise"));
+    private final Set<String> strengthExercises = new HashSet<>(Arrays.asList("Sit-ups", "Push-ups", "Squats", "Burpees"));
+    private final Set<String> trainingExercises = new HashSet<>(Arrays.asList("Weight training", "Core training", "Cardio training"));
 
     public WorkoutFragment() {}
 
@@ -41,11 +54,20 @@ public class WorkoutFragment extends Fragment {
         workoutHistory = new ArrayList<>();
 
         workoutSpinner = view.findViewById(R.id.workoutSelector);
-        repsPicker = view.findViewById(R.id.repsSelector);
-        setsPicker = view.findViewById(R.id.setsSelector);
+        repsPicker = view.findViewById(R.id.repsPicker);
+        setsPicker = view.findViewById(R.id.setsPicker);
         submitButton = view.findViewById(R.id.submitWorkoutButton);
         clearButton = view.findViewById(R.id.clearHistoryButton);
         recyclerView = view.findViewById(R.id.workoutHistoryRecyclerView);
+        convertToPointsCheckbox = view.findViewById(R.id.convertToPointsCheckbox);
+        totalPointsText = new TextView(getActivity());
+        totalPointsText.setText("Total Points: 0");
+
+        convertToPointsCheckbox = view.findViewById(R.id.convertToPointsCheckbox);
+        totalPointsText = view.findViewById(R.id.totalPointsText);
+        totalPointsText.setText("Total Points: " + totalPoints);
+
+
 
         initializeWorkoutData();
         setupSpinners();
@@ -66,14 +88,10 @@ public class WorkoutFragment extends Fragment {
     private void initializeWorkoutData() {
         workoutArray = new ArrayList<>();
         workoutArray.add("Select a workout");
-        workoutArray.add("Bench Press");
-        workoutArray.add("Squats");
-        workoutArray.add("Deadlifts");
-        workoutArray.add("Pull-ups");
-        workoutArray.add("Lunges");
-        workoutArray.add("Push-ups");
-        workoutArray.add("Planks");
-        workoutArray.add("Jump Rope");
+        workoutArray.addAll(lowIntensity);
+        workoutArray.addAll(highIntensity);
+        workoutArray.addAll(strengthExercises);
+        workoutArray.addAll(trainingExercises);
     }
 
     private void setupSpinners() {
@@ -84,7 +102,7 @@ public class WorkoutFragment extends Fragment {
 
     private void setupNumberPickers() {
         repsPicker.setMinValue(1);
-        repsPicker.setMaxValue(20);
+        repsPicker.setMaxValue(50);
         repsPicker.setWrapSelectorWheel(true);
 
         setsPicker.setMinValue(1);
@@ -102,11 +120,33 @@ public class WorkoutFragment extends Fragment {
             return;
         }
 
-        String workoutEntry = selectedWorkout + " - " + selectedReps + " reps x " + selectedSets + " sets";
+        int totalReps = selectedReps * selectedSets;
+        int points = calculatePoints(selectedWorkout, totalReps);
+
+        if (convertToPointsCheckbox.isChecked()) {
+            totalPoints += points;
+            totalPointsText.setText("Total Points: " + totalPoints);
+        }
+
+        String workoutEntry = selectedWorkout + " - " + selectedReps + " reps x " + selectedSets + " sets - " + points + " points";
         workoutHistory.add(0, workoutEntry);
         workoutAdapter.notifyDataSetChanged();
 
         saveWorkout(workoutEntry);
+    }
+
+    private int calculatePoints(String workout, int totalReps) {
+        if (lowIntensity.contains(workout)) {
+            return 1;
+        } else if (highIntensity.contains(workout)) {
+            return 2;
+        } else if (strengthExercises.contains(workout)) {
+            return (totalReps / 25);
+        } else if (trainingExercises.contains(workout)) {
+            return 2;
+        } else {
+            return 0;
+        }
     }
 
     private void saveWorkout(String workout) {
@@ -124,7 +164,7 @@ public class WorkoutFragment extends Fragment {
                 .collection("workouts")
                 .add(new WorkoutEntry(workout))
                 .addOnSuccessListener(documentReference ->
-                        Toast.makeText(getActivity(), "Workout saved to cloud!", Toast.LENGTH_SHORT).show())
+                        Toast.makeText(getActivity(), "Workout saved!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Toast.makeText(getActivity(), "Failed to save workout", Toast.LENGTH_SHORT).show());
     }
@@ -179,6 +219,8 @@ public class WorkoutFragment extends Fragment {
                             doc.getReference().delete();
                         }
                         workoutHistory.clear();
+                        totalPoints = 0;
+                        totalPointsText.setText("Total Points: 0");
                         workoutAdapter.notifyDataSetChanged();
                         Toast.makeText(getActivity(), "Workout history cleared!", Toast.LENGTH_SHORT).show();
                     } else {
@@ -187,7 +229,6 @@ public class WorkoutFragment extends Fragment {
                 });
     }
 
-    // Helper class for Firestore document
     public static class WorkoutEntry {
         private String workout;
 

@@ -44,12 +44,7 @@ public class Home extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        // Initialize fragments
-        ProfileFragment profileFragment = new ProfileFragment();
-        LeaderboardFragment leaderboardFragment = new LeaderboardFragment();
-        WorkoutFragment workoutFragment = new WorkoutFragment();
-        NutritionFragment nutritionFragment = new NutritionFragment();
-        FitnessGoalFragment fitnessGoalFragment = new FitnessGoalFragment();
+
 
         // Set the initial fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, profileFragment).commit();
