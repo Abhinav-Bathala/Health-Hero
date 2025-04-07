@@ -1,12 +1,12 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:context=".WorkoutFragment">
@@ -76,11 +76,11 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <Spinner
+
+                <NumberPicker
                     android:id="@+id/repsSelector"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_width="43dp"
+                    android:layout_height="93dp" />
 
                 <!-- Sets Selector -->
                 <TextView
@@ -91,10 +91,11 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <Spinner
+
+                <NumberPicker
                     android:id="@+id/setsSelector"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="43dp"
+                    android:layout_height="93dp" />
 
                 <!-- Checkbox for converting workout to points -->
                 <CheckBox
