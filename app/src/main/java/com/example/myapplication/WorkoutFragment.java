@@ -18,6 +18,7 @@ import com.google.firebase.firestore.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkoutFragment extends Fragment {
 
@@ -192,22 +193,27 @@ public class WorkoutFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String uid = user.getUid();
 
-        db.collection("users")
-                .document(uid)
-                .collection("workouts")
+        db.collection("users").document(uid).collection("workouts")
                 .document(entry.getDocumentId())
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     totalPoints -= entry.getPoints(); // Deduct points
                     workoutHistoryList.remove(position);
                     workoutAdapter.notifyItemRemoved(position);
-
                     totalPointsText.setText("Total Points: " + totalPoints); // Update UI
+
+
+                    DocumentReference userRef = db.collection("users").document(uid);
+                    userRef.update("points", FieldValue.increment(-entry.getPoints())) // Deduct points
+                            .addOnSuccessListener(aVoid2 -> Log.d("Firestore", "User points updated after workout deletion"))
+                            .addOnFailureListener(e -> Log.e("Firestore", "Error updating points after deletion", e));
+
                     Toast.makeText(getActivity(), "Workout deleted", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getActivity(), "Failed to delete workout", Toast.LENGTH_SHORT).show());
     }
+
 
     private void clearWorkoutHistory() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -216,20 +222,35 @@ public class WorkoutFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String uid = user.getUid();
 
+        AtomicInteger totalPointsToDeduct = new AtomicInteger(0); // Using AtomicInteger for effective finality
+
         db.collection("users").document(uid).collection("workouts")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     WriteBatch batch = db.batch();
+
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        int points = doc.getLong("points").intValue();
+                        totalPointsToDeduct.addAndGet(points); // Accumulate points being removed
                         batch.delete(doc.getReference());
                     }
+
                     batch.commit().addOnSuccessListener(aVoid -> {
                         workoutHistoryList.clear();
                         workoutAdapter.notifyDataSetChanged();
                         totalPoints = 0;
                         totalPointsText.setText("Total Points: 0");
+
+                        // 🔥 Update Firestore total points after clearing history
+                        DocumentReference userRef = db.collection("users").document(uid);
+                        userRef.update("points", FieldValue.increment(-totalPointsToDeduct.get())) // Deduct total cleared points
+                                .addOnSuccessListener(aVoid2 -> Log.d("Firestore", "User points updated after clearing history"))
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error updating points after clearing history", e));
+
                         Toast.makeText(getActivity(), "All workouts cleared", Toast.LENGTH_SHORT).show();
                     });
                 });
     }
+
+
 }
