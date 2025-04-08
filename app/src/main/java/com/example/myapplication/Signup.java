@@ -133,6 +133,7 @@ public class Signup extends AppCompatActivity {
                                 DocumentReference documentReference = fStore.collection("users").document(userID);
                                 Map<String, Object> user = new HashMap<>();
                                 user.put("email", email);
+                                user.put("points", 0);
 
                                 documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override

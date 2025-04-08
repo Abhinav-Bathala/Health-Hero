@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,7 @@ public class WorkoutFragment extends Fragment {
 
     private void addWorkoutToFirestore(WorkoutEntry entry) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -144,8 +146,15 @@ public class WorkoutFragment extends Fragment {
                     entry.setDocumentId(documentReference.getId());
                     workoutHistoryList.add(0, entry);
                     workoutAdapter.notifyItemInserted(0);
+
+                    // 🔥 Update total user points after adding workout
+                    DocumentReference userRef = db.collection("users").document(uid);
+                    userRef.update("points", FieldValue.increment(entry.getPoints()))
+                            .addOnSuccessListener(aVoid -> Log.d("Firestore", "User points updated"))
+                            .addOnFailureListener(e -> Log.e("Firestore", "Error updating points", e));
                 });
     }
+
 
     private void loadWorkouts() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

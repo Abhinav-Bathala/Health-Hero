@@ -55,6 +55,8 @@ public class Home extends AppCompatActivity {
             if (item.getItemId() == R.id.profile) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, profileFragment).commit();
                 return true;
+
+
             } else if (item.getItemId() == R.id.leaderboard) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, leaderboardFragment).commit();
                 return true;
