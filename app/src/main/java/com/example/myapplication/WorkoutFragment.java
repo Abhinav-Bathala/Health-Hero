@@ -148,7 +148,7 @@ public class WorkoutFragment extends Fragment {
                     workoutHistoryList.add(0, entry);
                     workoutAdapter.notifyItemInserted(0);
 
-                    // 🔥 Update total user points after adding workout
+                    // Update total user points after adding workout
                     DocumentReference userRef = db.collection("users").document(uid);
                     userRef.update("points", FieldValue.increment(entry.getPoints()))
                             .addOnSuccessListener(aVoid -> Log.d("Firestore", "User points updated"))
@@ -241,7 +241,7 @@ public class WorkoutFragment extends Fragment {
                         totalPoints = 0;
                         totalPointsText.setText("Total Points: 0");
 
-                        // 🔥 Update Firestore total points after clearing history
+                        // Update Firestore total points after clearing history
                         DocumentReference userRef = db.collection("users").document(uid);
                         userRef.update("points", FieldValue.increment(-totalPointsToDeduct.get())) // Deduct total cleared points
                                 .addOnSuccessListener(aVoid2 -> Log.d("Firestore", "User points updated after clearing history"))
