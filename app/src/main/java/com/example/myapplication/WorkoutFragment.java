@@ -198,6 +198,9 @@ public class WorkoutFragment extends Fragment {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     totalPoints -= entry.getPoints(); // Deduct points
+                    if (totalPoints<0){
+                        totalPoints=0;
+                    }
                     workoutHistoryList.remove(position);
                     workoutAdapter.notifyItemRemoved(position);
                     totalPointsText.setText("Total Points: " + totalPoints); // Update UI
