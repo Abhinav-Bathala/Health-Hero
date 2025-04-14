@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -17,6 +18,10 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.ViewHold
 
     private List<WorkoutFragment.WorkoutEntry> workoutHistoryList;
     private OnWorkoutDeleteListener deleteListener;
+
+    // Cooldown variables
+    private long lastDeleteClickTime = 0;
+    private static final long DELETE_COOLDOWN_MS = 500; // 0.5 seconds
 
     public WorkoutAdapter(List<WorkoutFragment.WorkoutEntry> workoutHistoryList, OnWorkoutDeleteListener deleteListener) {
         this.workoutHistoryList = workoutHistoryList;
@@ -36,6 +41,14 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.ViewHold
         holder.workoutText.setText(entry.getWorkout());
 
         holder.deleteButton.setOnClickListener(v -> {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastDeleteClickTime < DELETE_COOLDOWN_MS) {
+                Toast.makeText(v.getContext(), "Please wait before deleting again", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            lastDeleteClickTime = currentTime;
+
             if (deleteListener != null) {
                 deleteListener.onDelete(entry, position);
             }
