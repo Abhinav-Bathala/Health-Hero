@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,39 +15,55 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView emailTextView;
+    private TextView emailTextView, streakText, weightText, calorieText, rankingText;
     private Button logoutButton;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private FirebaseFirestore db;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // Initialize Firebase authentication and user
+        // Firebase setup
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
 
-        // Find UI elements in the layout
+        // View binding
         emailTextView = view.findViewById(R.id.user_details);
         logoutButton = view.findViewById(R.id.logout);
+        streakText = view.findViewById(R.id.streakText);
+        weightText = view.findViewById(R.id.weightText);
+        calorieText = view.findViewById(R.id.calorieText);
+        rankingText = view.findViewById(R.id.rankingText);
 
-        // Display the user's email
         if (user != null) {
             emailTextView.setText(user.getEmail());
+            checkAndUpdateStreak(user.getUid());
+            loadFitnessData(user.getUid());
+            loadUserRanking(user.getEmail());
         } else {
-            // Redirect to login if the user is not logged in
             Intent intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
             getActivity().finish();
         }
 
-        // Set up the logout button
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getActivity(), Login.class);
@@ -55,5 +72,97 @@ public class ProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void checkAndUpdateStreak(String uid) {
+        DocumentReference userRef = db.collection("users").document(uid);
+        userRef.get().addOnSuccessListener(document -> {
+            if (document.exists()) {
+                int currentStreak = document.contains("streakCount") ? document.getLong("streakCount").intValue() : 0;
+                String lastCheckIn = document.getString("lastCheckInDate");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String todayStr = sdf.format(new Date());
+
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                String yesterdayStr = sdf.format(cal.getTime());
+
+                if (lastCheckIn == null || lastCheckIn.compareTo(yesterdayStr) < 0) {
+                    currentStreak = 1;
+                } else if (lastCheckIn.equals(yesterdayStr)) {
+                    currentStreak += 1;
+                }
+
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("streakCount", currentStreak);
+                updates.put("lastCheckInDate", todayStr);
+                userRef.update(updates)
+                        .addOnFailureListener(e -> Log.e("Streak", "Failed to update: " + e.getMessage()));
+
+                streakText.setText("Daily Streak: " + currentStreak + " 🔥");
+            } else {
+                String todayStr = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                Map<String, Object> initData = new HashMap<>();
+                initData.put("streakCount", 1);
+                initData.put("lastCheckInDate", todayStr);
+                userRef.set(initData);
+                streakText.setText("Daily Streak: 1 🔥");
+            }
+        });
+    }
+
+    private void loadFitnessData(String uid) {
+        DocumentReference userRef = db.collection("users").document(uid);
+        userRef.get().addOnSuccessListener(document -> {
+            if (document.exists()) {
+                if (document.contains("weight")) {
+                    double weight = document.getDouble("weight");
+                    weightText.setText("Weight: " + weight + " kg");
+                } else {
+                    weightText.setText("Weight: N/A");
+                }
+
+                if (document.contains("recommendedCalories")) {
+                    long calories = document.getLong("recommendedCalories");
+                    calorieText.setText("Recommended Intake: " + calories + " kcal/day");
+                } else {
+                    calorieText.setText("Recommended Intake: N/A");
+                }
+            } else {
+                weightText.setText("Weight: N/A");
+                calorieText.setText("Recommended Intake: N/A");
+            }
+        }).addOnFailureListener(e -> {
+            weightText.setText("Weight: N/A");
+            calorieText.setText("Recommended Intake: N/A");
+            Log.e("ProfileFragment", "Error loading fitness data", e);
+        });
+    }
+
+    private void loadUserRanking(String userEmail) {
+        db.collection("users")
+                .orderBy("points", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    int rank = 1;
+                    boolean found = false;
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        String email = doc.getString("email");
+                        if (email != null && email.equals(userEmail)) {
+                            rankingText.setText("Ranking: #" + rank);
+                            found = true;
+                            break;
+                        }
+                        rank++;
+                    }
+                    if (!found) {
+                        rankingText.setText("Ranking: N/A");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    rankingText.setText("Ranking: N/A");
+                    Log.e("ProfileFragment", "Error loading user ranking", e);
+                });
     }
 }

@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,17 +98,7 @@ public class WorkoutFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(workoutAdapter);
 
-        // Cooldown logic for the submit button
-        submitWorkoutButton.setOnClickListener(v -> {
-            if (!submitWorkoutButton.isEnabled()) return;
-
-            submitWorkoutButton.setEnabled(false);  // Disable to prevent spam
-            submitWorkout();
-
-            // 0.5-second cooldown
-            new Handler().postDelayed(() -> submitWorkoutButton.setEnabled(true), 500);
-        });
-
+        submitWorkoutButton.setOnClickListener(v -> submitWorkout());
         clearHistoryButton.setOnClickListener(v -> clearWorkoutHistory());
 
         loadWorkouts();
@@ -130,6 +119,9 @@ public class WorkoutFragment extends Fragment {
                 (convertToPoints ? ", Points: " + points : "");
 
         WorkoutEntry entry = new WorkoutEntry(workoutEntry, points);
+
+        // Disable button to prevent double taps
+        submitWorkoutButton.setEnabled(false);
 
         addWorkoutToFirestore(entry);
     }
@@ -158,9 +150,13 @@ public class WorkoutFragment extends Fragment {
                             .addOnFailureListener(e -> Log.e("Firestore", "Error updating points", e));
 
                     totalPointsText.setText("Total Points: " + totalPoints);
+
+                    submitWorkoutButton.setEnabled(true); // Re-enable button
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Failed to add workout", e);
+                    submitWorkoutButton.setEnabled(true); // Re-enable on failure
+
                     Activity activity = getActivity();
                     if (activity != null) {
                         Toast.makeText(activity, "Failed to submit workout", Toast.LENGTH_SHORT).show();
