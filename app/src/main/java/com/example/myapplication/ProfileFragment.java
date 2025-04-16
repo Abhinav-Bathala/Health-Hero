@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,23 +31,28 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+
 public class ProfileFragment extends Fragment {
 
-    private TextView emailTextView, streakText, weightText, calorieText, rankingText;
+
+    private TextView emailTextView, streakText, weightText, calorieText, rankingText, welcomeText;
     private Button logoutButton;
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore db;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
         // Firebase setup
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
+
 
         // View binding
         emailTextView = view.findViewById(R.id.user_details);
@@ -52,9 +61,12 @@ public class ProfileFragment extends Fragment {
         weightText = view.findViewById(R.id.weightText);
         calorieText = view.findViewById(R.id.calorieText);
         rankingText = view.findViewById(R.id.rankingText);
+        welcomeText=view.findViewById(R.id.welcometext);
+
 
         if (user != null) {
             emailTextView.setText(user.getEmail());
+            loadWelcomeMessage(user.getUid());
             checkAndUpdateStreak(user.getUid());
             loadFitnessData(user.getUid());
             loadUserRanking(user.getEmail());
@@ -64,6 +76,7 @@ public class ProfileFragment extends Fragment {
             getActivity().finish();
         }
 
+
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getActivity(), Login.class);
@@ -71,8 +84,28 @@ public class ProfileFragment extends Fragment {
             getActivity().finish();
         });
 
+
         return view;
     }
+    private void loadWelcomeMessage(String uid) {
+        DocumentReference userRef = db.collection("users").document(uid);
+        userRef.get().addOnSuccessListener(document -> {
+            if (document.exists()) {
+                String name = document.getString("name");
+                if (name != null && !name.isEmpty()) {
+                    welcomeText.setText("Welcome, " + name + "!");
+                } else {
+                    welcomeText.setText("Welcome!");
+                }
+            } else {
+                welcomeText.setText("Welcome!");
+            }
+        }).addOnFailureListener(e -> {
+            welcomeText.setText("Welcome!");
+            Log.e("ProfileFragment", "Failed to load user name", e);
+        });
+    }
+
 
     private void checkAndUpdateStreak(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
@@ -81,12 +114,15 @@ public class ProfileFragment extends Fragment {
                 int currentStreak = document.contains("streakCount") ? document.getLong("streakCount").intValue() : 0;
                 String lastCheckIn = document.getString("lastCheckInDate");
 
+
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 String todayStr = sdf.format(new Date());
+
 
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
                 String yesterdayStr = sdf.format(cal.getTime());
+
 
                 if (lastCheckIn == null || lastCheckIn.compareTo(yesterdayStr) < 0) {
                     currentStreak = 1;
@@ -94,11 +130,13 @@ public class ProfileFragment extends Fragment {
                     currentStreak += 1;
                 }
 
+
                 Map<String, Object> updates = new HashMap<>();
                 updates.put("streakCount", currentStreak);
                 updates.put("lastCheckInDate", todayStr);
                 userRef.update(updates)
                         .addOnFailureListener(e -> Log.e("Streak", "Failed to update: " + e.getMessage()));
+
 
                 streakText.setText("Daily Streak: " + currentStreak + " 🔥");
             } else {
@@ -112,6 +150,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+
     private void loadFitnessData(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {
@@ -122,6 +161,7 @@ public class ProfileFragment extends Fragment {
                 } else {
                     weightText.setText("Weight: N/A");
                 }
+
 
                 if (document.contains("recommendedCalories")) {
                     long calories = document.getLong("recommendedCalories");
@@ -139,6 +179,7 @@ public class ProfileFragment extends Fragment {
             Log.e("ProfileFragment", "Error loading fitness data", e);
         });
     }
+
 
     private void loadUserRanking(String userEmail) {
         db.collection("users")

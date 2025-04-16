@@ -40,7 +40,7 @@ import java.util.Map;
 public class Signup extends AppCompatActivity {
 
 
-    TextInputEditText editTextEmail, editTextPassword;
+    TextInputEditText editTextEmail, editTextPassword, editTextName;
     Button buttonReg;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -90,6 +90,7 @@ public class Signup extends AppCompatActivity {
     fStore = FirebaseFirestore.getInstance();
     editTextEmail = findViewById(R.id.email_signup);
     editTextPassword = findViewById(R.id.password_signup);
+    editTextName = findViewById(R.id.name_signup);
     buttonReg = findViewById(R.id.signup_signup);
     progressBar = findViewById(R.id.progressBar_signup);
     textView = findViewById(R.id.createtxt_signup);
@@ -106,9 +107,10 @@ public class Signup extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             progressBar.setVisibility(View.VISIBLE);
-            String email, password;
+            String email, password, name;
             email = String.valueOf(editTextEmail.getText());
             password = String.valueOf(editTextPassword.getText());
+            name = String.valueOf(editTextName.getText());
 
 
             if (TextUtils.isEmpty(email)){
@@ -117,6 +119,10 @@ public class Signup extends AppCompatActivity {
             }
             if (TextUtils.isEmpty(password)){
                 Toast.makeText(Signup.this, "Enter Password: ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(name)){
+                Toast.makeText(Signup.this, "Enter Name: ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -134,6 +140,8 @@ public class Signup extends AppCompatActivity {
                                 Map<String, Object> user = new HashMap<>();
                                 user.put("email", email);
                                 user.put("points", 0);
+                                user.put("name", name);
+
 
                                 documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
