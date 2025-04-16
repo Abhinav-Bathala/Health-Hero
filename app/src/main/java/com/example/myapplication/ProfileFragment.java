@@ -61,7 +61,7 @@ public class ProfileFragment extends Fragment {
         weightText = view.findViewById(R.id.weightText);
         calorieText = view.findViewById(R.id.calorieText);
         rankingText = view.findViewById(R.id.rankingText);
-        welcomeText=view.findViewById(R.id.welcometext);
+        welcomeText= view.findViewById(R.id.welcometext);
 
 
         if (user != null) {
