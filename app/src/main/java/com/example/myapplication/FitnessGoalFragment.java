@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,10 +25,10 @@ import java.util.Map;
 public class FitnessGoalFragment extends Fragment {
 
     private RadioGroup goalRadioGroup, genderRadioGroup;
-    private EditText etAge, etHeight, etWeight, etCaloricIntake;
+    private EditText etAge, etHeight, etWeight, etCaloricIntake, etWeightGoalDiff;
     private Spinner spinnerActivityLevel;
     private Button btnSubmit;
-    private TextView tvRecommendation;
+    private TextView tvRecommendation, tvInitial;
     private FirebaseFirestore db;
 
     public FitnessGoalFragment() {
@@ -40,10 +41,12 @@ public class FitnessGoalFragment extends Fragment {
 
         goalRadioGroup = view.findViewById(R.id.goalRadioGroup);
         tvRecommendation = view.findViewById(R.id.tvRecommendation);
+        tvInitial = view.findViewById(R.id.tvInitial);
         genderRadioGroup = view.findViewById(R.id.genderRadioGroup);
         etAge = view.findViewById(R.id.etAge);
         etHeight = view.findViewById(R.id.etHeight);
         etWeight = view.findViewById(R.id.etWeight);
+        etWeightGoalDiff = view.findViewById(R.id.etWeightGoalDiff);
         etCaloricIntake = view.findViewById(R.id.etCaloricIntake);
         spinnerActivityLevel = view.findViewById(R.id.spinnerActivityLevel);
         btnSubmit = view.findViewById(R.id.btnSubmit);
@@ -69,7 +72,6 @@ public class FitnessGoalFragment extends Fragment {
                                 int recommendedCalories = recommendedCaloriesValue.intValue();
 
                                 String goal = documentSnapshot.getString("goal");
-                                String gender = documentSnapshot.getString("gender");
 
                                 String message = "Your estimated Total Daily Energy Expenditure: " + tdee + " kcal/day\n" +
                                         "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
@@ -77,6 +79,37 @@ public class FitnessGoalFragment extends Fragment {
                             } else {
                                 tvRecommendation.setText("No recommendation data found. Please submit your goal.");
                             }
+
+                            String initialStats = "";
+
+                            Long ageValue = documentSnapshot.getLong("age");
+                            Double heightValue = documentSnapshot.getDouble("height");
+                            Double weightValue = documentSnapshot.getDouble("weight");
+                            String activityLevel = documentSnapshot.getString("activityLevel");
+                            String timeMessage = documentSnapshot.getString("timeToReachGoal");
+                            String goal = documentSnapshot.getString("goal");
+                            Double weightGoalDiff = documentSnapshot.getDouble("weightGoalDiff");
+
+                            if (ageValue != null && heightValue != null && weightValue != null && activityLevel != null) {
+                                initialStats = "Initial Stats:\n" +
+                                        "Age: " + ageValue + " yrs\n" +
+                                        "Height: " + heightValue + " cm\n" +
+                                        "Weight: " + weightValue + " kg\n" +
+                                        "Activity Level: " + activityLevel;
+
+                                if (weightGoalDiff != null && goal != null) {
+                                    String sign = goal.equals("Bulking") ? "+" : goal.equals("Cutting") ? "-" : "";
+                                    initialStats += "\nDesired Weight Change: " + sign + weightGoalDiff + " kg";
+                                }
+                            } else {
+                                initialStats = "No initial stats found.";
+                            }
+
+                            if (timeMessage != null) {
+                                initialStats += "\n\n" + timeMessage;
+                            }
+
+                            tvInitial.setText(initialStats);
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -103,18 +136,20 @@ public class FitnessGoalFragment extends Fragment {
         String heightStr = etHeight.getText().toString().trim();
         String weightStr = etWeight.getText().toString().trim();
         String activityLevel = spinnerActivityLevel.getSelectedItem().toString();
+        String weightGoalDiffStr = etWeightGoalDiff.getText().toString().trim();
 
-        if (goal.isEmpty() || gender.isEmpty() || ageStr.isEmpty() || heightStr.isEmpty() || weightStr.isEmpty()) {
+        if (goal.isEmpty() || gender.isEmpty() || ageStr.isEmpty() || heightStr.isEmpty() || weightStr.isEmpty() || weightGoalDiffStr.isEmpty()) {
             Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         int age;
-        float height, weight;
+        float height, weight, weightGoalDiff;
         try {
             age = Integer.parseInt(ageStr);
             height = Float.parseFloat(heightStr);
             weight = Float.parseFloat(weightStr);
+            weightGoalDiff = Float.parseFloat(weightGoalDiffStr);
         } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Invalid number input", Toast.LENGTH_SHORT).show();
             return;
@@ -144,13 +179,18 @@ public class FitnessGoalFragment extends Fragment {
         double tdee = bmr * activityMultiplier;
 
         int recommendedCalories = goal.equals("Bulking") ?
-                (int) (tdee + 400) :
-                (int) (tdee - 400);
+                (int) (tdee + 500) :
+                (int) (tdee - 500);
+
+        double daysToReachGoal = (weightGoalDiff * 7700) / 500;
+        String timeToReachGoal = "It should take approximately " + Math.round(daysToReachGoal) + " days to reach your weight goal in a healthy manner.";
 
         String message = "Your estimated Total Daily Energy Expenditure: " + (int) tdee + " kcal/day\n" +
-                "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
+                "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day\n" +
+                timeToReachGoal;
 
         tvRecommendation.setText(message);
+        tvInitial.setText(timeToReachGoal);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -167,10 +207,12 @@ public class FitnessGoalFragment extends Fragment {
             userData.put("tdee", (int) tdee);
             userData.put("recommendedCalories", recommendedCalories);
             userData.put("message", message);
+            userData.put("timeToReachGoal", timeToReachGoal);
+            userData.put("weightGoalDiff", weightGoalDiff);
 
             db.collection("users")
                     .document(uid)
-                    .set(userData, SetOptions.merge()) // <-- Merge instead of overwrite
+                    .set(userData, SetOptions.merge())
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(getContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show();
                     })
