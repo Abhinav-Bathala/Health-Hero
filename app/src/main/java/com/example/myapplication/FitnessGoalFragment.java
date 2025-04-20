@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -25,10 +26,10 @@ import java.util.Map;
 public class FitnessGoalFragment extends Fragment {
 
     private RadioGroup goalRadioGroup, genderRadioGroup;
-    private EditText etAge, etHeight, etWeight, etCaloricIntake, etWeightGoalDiff;
+    private EditText etAge, etHeight, etWeight, etCaloricIntake, etWeightGoalDiff, etWeightUpdate;
     private Spinner spinnerActivityLevel;
-    private Button btnSubmit;
-    private TextView tvRecommendation, tvInitial;
+    private Button btnSubmit, btnUpdateProgress;
+    private TextView tvRecommendation, tvInitial, tvProgressPercent;
     private FirebaseFirestore db;
 
     public FitnessGoalFragment() {
@@ -39,17 +40,24 @@ public class FitnessGoalFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Initialize views
         goalRadioGroup = view.findViewById(R.id.goalRadioGroup);
-        tvRecommendation = view.findViewById(R.id.tvRecommendation);
-        tvInitial = view.findViewById(R.id.tvInitial);
         genderRadioGroup = view.findViewById(R.id.genderRadioGroup);
         etAge = view.findViewById(R.id.etAge);
         etHeight = view.findViewById(R.id.etHeight);
         etWeight = view.findViewById(R.id.etWeight);
         etWeightGoalDiff = view.findViewById(R.id.etWeightGoalDiff);
         etCaloricIntake = view.findViewById(R.id.etCaloricIntake);
+        etWeightUpdate = view.findViewById(R.id.etWeightUpdate);
         spinnerActivityLevel = view.findViewById(R.id.spinnerActivityLevel);
         btnSubmit = view.findViewById(R.id.btnSubmit);
+        tvRecommendation = view.findViewById(R.id.tvRecommendation);
+        tvInitial = view.findViewById(R.id.tvInitial);
+        etWeightUpdate = view.findViewById(R.id.etWeightUpdate);
+        btnUpdateProgress = view.findViewById(R.id.btnUpdateProgress);
+        tvProgressPercent = view.findViewById(R.id.tvProgressPercent);
+
+
 
         db = FirebaseFirestore.getInstance();
 
@@ -59,67 +67,68 @@ public class FitnessGoalFragment extends Fragment {
         if (user != null) {
             String uid = user.getUid();
 
-            db.collection("users")
-                    .document(uid)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Long tdeeValue = documentSnapshot.getLong("tdee");
-                            Long recommendedCaloriesValue = documentSnapshot.getLong("recommendedCalories");
+            DocumentReference userRef = db.collection("users").document(uid);
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Long tdeeValue = documentSnapshot.getLong("tdee");
+                    Long recommendedCaloriesValue = documentSnapshot.getLong("recommendedCalories");
 
-                            if (tdeeValue != null && recommendedCaloriesValue != null) {
-                                int tdee = tdeeValue.intValue();
-                                int recommendedCalories = recommendedCaloriesValue.intValue();
+                    if (tdeeValue != null && recommendedCaloriesValue != null) {
+                        int tdee = tdeeValue.intValue();
+                        int recommendedCalories = recommendedCaloriesValue.intValue();
+                        String goal = documentSnapshot.getString("goal");
 
-                                String goal = documentSnapshot.getString("goal");
+                        String message = "Your estimated Total Daily Energy Expenditure: " + tdee + " kcal/day\n" +
+                                "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
+                        tvRecommendation.setText(message);
+                    } else {
+                        tvRecommendation.setText("No recommendation data found. Please submit your goal.");
+                    }
 
-                                String message = "Your estimated Total Daily Energy Expenditure: " + tdee + " kcal/day\n" +
-                                        "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
-                                tvRecommendation.setText(message);
-                            } else {
-                                tvRecommendation.setText("No recommendation data found. Please submit your goal.");
-                            }
+                    String initialStats = "";
 
-                            String initialStats = "";
+                    Long ageValue = documentSnapshot.getLong("age");
+                    Double heightValue = documentSnapshot.getDouble("height");
+                    Double weightValue = documentSnapshot.getDouble("weight");
+                    String activityLevel = documentSnapshot.getString("activityLevel");
+                    String timeMessage = documentSnapshot.getString("timeToReachGoal");
+                    String goal = documentSnapshot.getString("goal");
+                    Double weightGoalDiff = documentSnapshot.getDouble("weightGoalDiff");
 
-                            Long ageValue = documentSnapshot.getLong("age");
-                            Double heightValue = documentSnapshot.getDouble("height");
-                            Double weightValue = documentSnapshot.getDouble("weight");
-                            String activityLevel = documentSnapshot.getString("activityLevel");
-                            String timeMessage = documentSnapshot.getString("timeToReachGoal");
-                            String goal = documentSnapshot.getString("goal");
-                            Double weightGoalDiff = documentSnapshot.getDouble("weightGoalDiff");
+                    if (ageValue != null && heightValue != null && weightValue != null && activityLevel != null) {
+                        initialStats = "Initial Stats:\n" +
+                                "Age: " + ageValue + " yrs\n" +
+                                "Height: " + heightValue + " cm\n" +
+                                "Weight: " + weightValue + " kg\n" +
+                                "Activity Level: " + activityLevel;
 
-                            if (ageValue != null && heightValue != null && weightValue != null && activityLevel != null) {
-                                initialStats = "Initial Stats:\n" +
-                                        "Age: " + ageValue + " yrs\n" +
-                                        "Height: " + heightValue + " cm\n" +
-                                        "Weight: " + weightValue + " kg\n" +
-                                        "Activity Level: " + activityLevel;
-
-                                if (weightGoalDiff != null && goal != null) {
-                                    String sign = goal.equals("Bulking") ? "+" : goal.equals("Cutting") ? "-" : "";
-                                    initialStats += "\nDesired Weight Change: " + sign + weightGoalDiff + " kg";
-                                }
-                            } else {
-                                initialStats = "No initial stats found.";
-                            }
-
-                            if (timeMessage != null) {
-                                initialStats += "\n\n" + timeMessage;
-                            }
-
-                            tvInitial.setText(initialStats);
+                        if (weightGoalDiff != null && goal != null) {
+                            String sign = goal.equals("Bulking") ? "+" : goal.equals("Cutting") ? "-" : "";
+                            initialStats += "\nDesired Weight Change: " + sign + weightGoalDiff + " kg";
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Failed to load data", Toast.LENGTH_SHORT).show();
-                    });
+                    } else {
+                        initialStats = "No initial stats found.";
+                    }
+
+                    if (timeMessage != null) {
+                        initialStats += "\n\n" + timeMessage;
+                    }
+
+                    tvInitial.setText(initialStats);
+
+
+
+                }
+            }).addOnFailureListener(e ->
+                    Toast.makeText(getContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
+            );
         } else {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
         }
 
         btnSubmit.setOnClickListener(v -> handleSubmit());
+        btnUpdateProgress.setOnClickListener(v -> handleProgressUpdate());
+
     }
 
     private void handleSubmit() {
@@ -223,4 +232,71 @@ public class FitnessGoalFragment extends Fragment {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
+    private void handleProgressUpdate() {
+        String updateStr = etWeightUpdate.getText().toString().trim();
+        if (updateStr.isEmpty()) {
+            Toast.makeText(getContext(), "Please enter your weight change", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        float weightUpdate;
+        try {
+            weightUpdate = Float.parseFloat(updateStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Invalid number format", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            db.collection("users").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Double currentWeightDiff = documentSnapshot.getDouble("weightGoalDiff");
+
+                            if (currentWeightDiff != null) {
+                                double newWeightDiff = currentWeightDiff - weightUpdate;
+
+                                // Calculate total goal and completed amount
+                                Double originalGoal = documentSnapshot.getDouble("originalWeightGoalDiff");
+                                if (originalGoal == null) {
+                                    originalGoal = currentWeightDiff; // Store original goal if not set yet
+                                    Map<String, Object> originSet = new HashMap<>();
+                                    originSet.put("originalWeightGoalDiff", originalGoal);
+                                    db.collection("users").document(uid).set(originSet, SetOptions.merge());
+                                }
+
+                                double percentComplete = 100 * (originalGoal - newWeightDiff) / originalGoal;
+                                if (percentComplete > 100) percentComplete = 100;
+                                if (percentComplete < 0) percentComplete = 0;
+
+                                tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", percentComplete));
+
+                                Map<String, Object> updateMap = new HashMap<>();
+                                updateMap.put("weightGoalDiff", newWeightDiff);
+
+                                db.collection("users").document(uid)
+                                        .set(updateMap, SetOptions.merge())
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(getContext(), "Progress updated! Remaining: " + newWeightDiff + " kg", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+
+                            } else {
+                                Toast.makeText(getContext(), "No goal data found to update", Toast.LENGTH_SHORT).show();
+                            }
+
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Error accessing Firestore", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

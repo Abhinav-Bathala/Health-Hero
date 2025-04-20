@@ -203,13 +203,43 @@
                     android:text="Update your progress towards your goal."
                     android:textSize="30sp"
                     android:textAlignment="center" />
+                <!-- Weight Progress Update -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enter weight change (kg):"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp" />
 
                 <EditText
-                    android:id="@+id/etWeightChange"
+                    android:id="@+id/etWeightUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="How much weight have you lost or gained? (kg)"
-                    android:inputType="numberDecimal" />
+                    android:hint="Enter weight update (e.g. -0.5)"
+                    android:inputType="numberDecimal|numberSigned" />
+
+
+                <Button
+                    android:id="@+id/btnUpdateProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Update Progress"
+                    android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/tvProgressPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Goal Progress: 0%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+
+
+
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
