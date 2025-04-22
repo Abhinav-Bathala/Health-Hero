@@ -1,18 +1,18 @@
 package com.example.myapplication;
 
 public class LeaderboardEntry {
-    private String email;
+    private String name;
     private long points;
 
     public LeaderboardEntry() {}
 
-    public LeaderboardEntry(String email, long points) {
-        this.email = email;
+    public LeaderboardEntry(String name, long points) {
+        this.name = name;
         this.points = points;
     }
 
     public String getEmail() {
-        return email;
+        return name;
     }
 
     public long getPoints() {

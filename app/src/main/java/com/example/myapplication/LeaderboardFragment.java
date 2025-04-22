@@ -48,10 +48,10 @@ public class LeaderboardFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     leaderboardList.clear();
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        String email = doc.getString("email");
+                        String name = doc.getString("name");
                         Long points = doc.getLong("points");
-                        if (email != null && points != null) {
-                            leaderboardList.add(new LeaderboardEntry(email, points));
+                        if (name != null && points != null) {
+                            leaderboardList.add(new LeaderboardEntry(name, points));
                         }
                     }
                     adapter.notifyDataSetChanged();
