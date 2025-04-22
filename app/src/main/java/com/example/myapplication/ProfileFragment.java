@@ -91,6 +91,7 @@ public class ProfileFragment extends Fragment {
         userRef.get().addOnSuccessListener(document -> {
             int currentStreak = document.contains("streakCount") ? document.getLong("streakCount").intValue() : 0;
             String lastCheckIn = document.getString("lastCheckInDate");
+            String savedQuote = document.getString("streakQuote");
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String todayStr = sdf.format(new Date());
@@ -117,10 +118,16 @@ public class ProfileFragment extends Fragment {
             streakText.setText("Streak:\n" + currentStreak + " 🔥");
 
             if (streakIncreased) {
-                displayRandomQuote();
+                displayAndSaveQuote(userRef);
+            } else if (savedQuote != null && !savedQuote.isEmpty()) {
+                quoteText.setText("\"" + savedQuote + "\"");
+            } else {
+                quoteText.setText("- Keep pushing forward!");
             }
+
         }).addOnFailureListener(e -> Log.e("Streak", "Failed to load streak data", e));
     }
+
 
     private void displayRandomQuote() {
         try {
@@ -137,13 +144,43 @@ public class ProfileFragment extends Fragment {
 
             if (!quotes.isEmpty()) {
                 String selectedQuote = quotes.get(new Random().nextInt(quotes.size()));
-                quoteText.setText("\"" + selectedQuote + "\"");
+                quoteText.setText("\" + selectedQuote + \"");
             }
         } catch (Exception e) {
             Log.e("QuoteError", "Could not load quote", e);
             quoteText.setText("- Stay strong and keep going!");
         }
     }
+
+    private void displayAndSaveQuote(DocumentReference userRef) {
+        try {
+            InputStream inputStream = getResources().openRawResource(R.raw.motivationalquotes);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            List<String> quotes = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    quotes.add(line.trim());
+                }
+            }
+            reader.close();
+
+            if (!quotes.isEmpty()) {
+                String selectedQuote = quotes.get(new Random().nextInt(quotes.size()));
+                quoteText.setText("\"" + selectedQuote + "\"");
+
+                // Save the quote to Firestore
+                Map<String, Object> quoteUpdate = new HashMap<>();
+                quoteUpdate.put("streakQuote", selectedQuote);
+                userRef.update(quoteUpdate).addOnFailureListener(e -> Log.e("QuoteSave", "Failed to save quote", e));
+            }
+        } catch (Exception e) {
+            Log.e("QuoteError", "Could not load quote", e);
+            quoteText.setText("- Stay strong and keep going!");
+        }
+    }
+
+
 
     private void loadFitnessData(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
