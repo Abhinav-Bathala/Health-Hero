@@ -18,10 +18,7 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
+
 public class LeaderboardFragment extends Fragment {
 
     private RecyclerView recyclerView;
