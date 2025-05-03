@@ -191,7 +191,7 @@ public class NutritionFragment extends Fragment {
                 }).addOnSuccessListener(unused -> loadTodayCalories(uid))
                 .addOnFailureListener(e -> Log.e("Firestore", "Daily calorie update failed", e));
     }
-    // Inside your NutritionFragment.java
+
     private void awardPoints(String uid, int pointsToAdd) {
         DocumentReference userRef = db.collection("users").document(uid);
 
@@ -277,7 +277,6 @@ public class NutritionFragment extends Fragment {
             });
         });
     }
-    /** Disable the meal‐entry fields & submit button. */
     private void disableInputs() {
         etMealName.setEnabled(false);
         etCalories .setEnabled(false);
@@ -285,7 +284,6 @@ public class NutritionFragment extends Fragment {
         btnSubmit  .setEnabled(false);
     }
 
-    /** On fragment load, if today was already finished, keep inputs disabled. */
     private void checkIfFinishedAndDisable(String uid) {
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(new Date());

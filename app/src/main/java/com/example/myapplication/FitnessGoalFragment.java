@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -115,6 +117,18 @@ public class FitnessGoalFragment extends Fragment {
                     }
 
                     tvInitial.setText(initialStats);
+                    Double originalGoal = documentSnapshot.getDouble("originalWeightGoalDiff");
+                    Double currentGoalDiff = documentSnapshot.getDouble("weightGoalDiff");
+
+                    if (originalGoal != null && currentGoalDiff != null) {
+                        double percentComplete = 100 * (originalGoal - currentGoalDiff) / originalGoal;
+                        if (percentComplete > 100) percentComplete = 100;
+                        if (percentComplete < 0) percentComplete = 0;
+                        tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", percentComplete));
+                    } else {
+                        tvProgressPercent.setText("Goal Progress: 0.0%");
+                    }
+
 
 
 
@@ -274,22 +288,28 @@ public class FitnessGoalFragment extends Fragment {
 
                                 tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", percentComplete));
 
+
                                 Map<String, Object> updateMap = new HashMap<>();
                                 updateMap.put("weightGoalDiff", newWeightDiff);
+                                double percentComplete2 = (weightUpdate/originalGoal)*100;
+
+                                int pointsEarned = Math.round((float) percentComplete2); // Ensure correct type
 
                                 db.collection("users").document(uid)
                                         .set(updateMap, SetOptions.merge())
                                         .addOnSuccessListener(aVoid -> {
                                             Toast.makeText(getContext(), "Progress updated! Remaining: " + newWeightDiff + " kg", Toast.LENGTH_SHORT).show();
+                                            awardPoints(uid, pointsEarned);
                                         })
+
                                         .addOnFailureListener(e -> {
                                             Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                         });
                             }
 
-                            } else {
-                                Toast.makeText(getContext(), "No goal data found to update", Toast.LENGTH_SHORT).show();
-                            }
+                        } else {
+                            Toast.makeText(getContext(), "No goal data found to update", Toast.LENGTH_SHORT).show();
+                        }
 
                     })
                     .addOnFailureListener(e -> {
@@ -299,5 +319,29 @@ public class FitnessGoalFragment extends Fragment {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    private void awardPoints(String uid, int pointsToAdd) {
+        DocumentReference userRef = db.collection("users").document(uid);
+
+        db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.get(userRef);
+            long currentPoints = 0;
+            if (snapshot.exists() && snapshot.contains("points")) {
+                Long val = snapshot.getLong("points");
+                if (val != null) {
+                    currentPoints = val;
+                }
+            }
+            long updatedPoints = currentPoints + pointsToAdd;
+            transaction.update(userRef, "points", updatedPoints);
+            return null;
+        }).addOnSuccessListener(unused -> {
+            Log.d("FitnessGoalFragment", pointsToAdd + " points awarded.");
+        }).addOnFailureListener(e -> {
+            Log.e("FitnessGoalFragment", "Failed to award points", e);
+        });
+    }
+
 
 }
