@@ -232,6 +232,7 @@ public class FitnessGoalFragment extends Fragment {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void handleProgressUpdate() {
         String updateStr = etWeightUpdate.getText().toString().trim();
         if (updateStr.isEmpty()) {

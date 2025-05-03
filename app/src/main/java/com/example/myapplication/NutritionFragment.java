@@ -38,7 +38,7 @@ import java.util.Map;
 public class NutritionFragment extends Fragment {
 
     private EditText etMealName, etCalories, etNotes;
-    private Button btnSubmit;
+    private Button btnSubmit, btnFinishDay;
     private TextView tvTotalCalories;
     private RecyclerView recyclerView;
     private MealAdapter mealAdapter;
@@ -55,6 +55,7 @@ public class NutritionFragment extends Fragment {
         etCalories = view.findViewById(R.id.calorie_input);
         etNotes = view.findViewById(R.id.extra_notes);
         btnSubmit = view.findViewById(R.id.submit_meal);
+        btnFinishDay = view.findViewById(R.id.btnFinishDay);
         tvTotalCalories = view.findViewById(R.id.tv_total_calories);
         recyclerView = view.findViewById(R.id.meal_history_recycler);
 
@@ -68,7 +69,14 @@ public class NutritionFragment extends Fragment {
         if (user != null) {
             loadMealHistory();
             loadTodayCalories(user.getUid());
+            checkIfFinishedAndDisable(user.getUid());
+
         }
+        btnFinishDay.setOnClickListener(v -> {
+            if (user != null) {
+                evaluateNutritionGoalAndAwardPoints(user.getUid());
+            }
+        });
 
         btnSubmit.setOnClickListener(v -> {
             String name = etMealName.getText().toString().trim();
@@ -106,6 +114,7 @@ public class NutritionFragment extends Fragment {
                         etNotes.setText("");
 
                         updateDailyCalories(user.getUid(), calories);
+                        awardPoints(user.getUid(), 10);
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(getContext(), "Failed to log meal", Toast.LENGTH_SHORT).show()
@@ -174,9 +183,126 @@ public class NutritionFragment extends Fragment {
                         }
                     }
                     long updatedTotal = currentTotal + newCalories;
-                    transaction.set(dailyRef, Collections.singletonMap("totalCalories", updatedTotal), SetOptions.merge());
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("totalCalories", updatedTotal);
+                    data.put("finishedDay", false); // Only gets overwritten if missing
+                    transaction.set(dailyRef, data, SetOptions.merge());
                     return null;
                 }).addOnSuccessListener(unused -> loadTodayCalories(uid))
                 .addOnFailureListener(e -> Log.e("Firestore", "Daily calorie update failed", e));
     }
+    // Inside your NutritionFragment.java
+    private void awardPoints(String uid, int pointsToAdd) {
+        DocumentReference userRef = db.collection("users").document(uid);
+
+        db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.get(userRef);
+            long currentPoints = 0;
+            if (snapshot.exists() && snapshot.contains("points")) {
+                Long val = snapshot.getLong("points");
+                if (val != null) {
+                    currentPoints = val;
+                }
+            }
+            long updatedPoints = currentPoints + pointsToAdd;
+            transaction.update(userRef, "points", updatedPoints);
+            return null;
+        }).addOnSuccessListener(unused -> {
+            Log.d("NutritionFragment", pointsToAdd + " points awarded.");
+        }).addOnFailureListener(e -> {
+            Log.e("NutritionFragment", "Failed to award points", e);
+        });
+    }
+    private void evaluateNutritionGoalAndAwardPoints(String uid) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        DocumentReference userRef = db.collection("users").document(uid);
+        DocumentReference calorieRef = userRef.collection("dailyCalories").document(today);
+
+        calorieRef.get().addOnSuccessListener(calorieSnap -> {
+            if (!calorieSnap.exists()) return;
+
+            Boolean alreadyFinished = calorieSnap.getBoolean("finishedDay");
+            if (alreadyFinished != null && alreadyFinished) {
+                Toast.makeText(getContext(), "You’ve already finished your day today.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            userRef.get().addOnSuccessListener(userSnap -> {
+                if (!userSnap.exists()) return;
+
+                String goal = userSnap.getString("goal");
+                Long recommendedCaloriesLong = userSnap.getLong("recommendedCalories");
+
+                if (goal == null || recommendedCaloriesLong == null) {
+                    Toast.makeText(getContext(), "No goal set. Set a goal to earn nutrition-based points.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                int recommendedCalories = recommendedCaloriesLong.intValue();
+                Long totalCaloriesLong = calorieSnap.getLong("totalCalories");
+                if (totalCaloriesLong == null) return;
+
+                int actualCalories = totalCaloriesLong.intValue();
+                int calorieDiff = Math.abs(actualCalories - recommendedCalories);
+
+                if (goal.equalsIgnoreCase("cutting") || goal.equalsIgnoreCase("bulking")) {
+                    if (calorieDiff <= 100) {
+                        awardPoints(uid, 100);
+                        Toast.makeText(getContext(), "Awesome! You're within 100 calories of your goal. 100 points awarded!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Outside the 100-calorie target. 0 points awarded.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Fallback to performance-based for other goal types
+                    int tdee = userSnap.getLong("tdee") != null ? userSnap.getLong("tdee").intValue() : 0;
+                    int goalDelta = Math.abs(tdee - recommendedCalories);
+                    int actualDelta = Math.abs(tdee - actualCalories);
+
+                    float performanceRatio = Math.min(1f, (float) actualDelta / goalDelta);
+                    int pointsEarned = Math.round(performanceRatio * 100);
+
+                    awardPoints(uid, pointsEarned);
+                    Toast.makeText(getContext(), pointsEarned + " points awarded for today!", Toast.LENGTH_SHORT).show();
+                }
+
+                // Mark the day as finished either way
+                calorieRef.update("finishedDay", true)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("NutritionFragment", "Day marked as finished.");
+
+                            disableInputs();
+
+                        })
+                        .addOnFailureListener(e -> Log.e("NutritionFragment", "Failed to mark day as finished", e));
+            });
+        });
+    }
+    /** Disable the meal‐entry fields & submit button. */
+    private void disableInputs() {
+        etMealName.setEnabled(false);
+        etCalories .setEnabled(false);
+        etNotes    .setEnabled(false);
+        btnSubmit  .setEnabled(false);
+    }
+
+    /** On fragment load, if today was already finished, keep inputs disabled. */
+    private void checkIfFinishedAndDisable(String uid) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                .format(new Date());
+        DocumentReference calorieRef = db.collection("users")
+                .document(uid)
+                .collection("dailyCalories")
+                .document(today);
+        calorieRef.get().addOnSuccessListener(snap -> {
+            Boolean done = snap.getBoolean("finishedDay");
+            if (done != null && done) {
+                disableInputs();
+            }
+        });
+    }
+
+
 }
+
+
+
