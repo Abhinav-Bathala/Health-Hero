@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -32,6 +34,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         holder.calories.setText(meal.getCalories() + " kcal");
         holder.notes.setText(meal.getNotes());
         holder.timestamp.setText(meal.getTimestamp());
+        Context context = holder.itemView.getContext();
+        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+        holder.name.setTextColor(ContextCompat.getColor(context, R.color.white));
+        holder.calories.setTextColor(ContextCompat.getColor(context, R.color.white));
+        holder.notes.setTextColor(ContextCompat.getColor(context, R.color.white));
+        holder.timestamp.setTextColor(ContextCompat.getColor(context, R.color.grey));
     }
 
     @Override

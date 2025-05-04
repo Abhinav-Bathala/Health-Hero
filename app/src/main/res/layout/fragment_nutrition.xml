@@ -4,6 +4,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_primary"
     android:padding="16dp">
 
     <LinearLayout
@@ -15,11 +16,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nutrition"
+            android:text="🥗 Nutrition"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:textColor="@color/text_primary"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp"/>
+            android:paddingBottom="16dp" />
 
         <!-- Card for Calorie Intake Tracker -->
         <androidx.cardview.widget.CardView
@@ -27,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,6 +44,7 @@
                     android:text="Calorie Intake Tracker"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    android:textColor="@color/text_primary"
                     android:paddingBottom="8dp" />
 
                 <EditText
@@ -48,29 +52,38 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter meal name"
-                    android:inputType="text"/>
+                    android:inputType="text"
+                    android:textColor="@color/text_primary"
+                    android:backgroundTint="@color/text_secondary" />
 
                 <EditText
                     android:id="@+id/calorie_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter calorie count"
-                    android:inputType="number"/>
+                    android:inputType="number"
+                    android:textColor="@color/text_primary"
+                    android:backgroundTint="@color/text_secondary" />
 
                 <EditText
                     android:id="@+id/extra_notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Additional notes (optional)"
-                    android:inputType="textMultiLine"/>
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/text_primary"
+                    android:backgroundTint="@color/text_secondary" />
 
                 <Button
                     android:id="@+id/submit_meal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Submit"
+                    android:textStyle="bold"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@color/accent_primary"
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -79,7 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,30 +107,46 @@
                     android:text="Meal History"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:paddingBottom="8dp"/>
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp" />
+
                 <TextView
                     android:id="@+id/tv_total_calories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Today's Calories: 0"
-                    android:textStyle="bold"
                     android:textSize="18sp"
-                    android:layout_marginBottom="16dp"
-                    />
-
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="16dp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/meal_history_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Finish Day Button -->
         <Button
             android:id="@+id/btnFinishDay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Finish Day (for awarding of points)" />
-
+            android:text="Finish Day"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/accent_primary"
+            android:textColor="@color/text_primary" />
+        <TextView
+            android:id="@+id/extraInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note: Only press the button once the day is over to earn your nutrition points! "
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="16dp" />
     </LinearLayout>
 </ScrollView>

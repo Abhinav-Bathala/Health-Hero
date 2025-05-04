@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,14 +40,13 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
         // Firebase
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
         // View bindings
-        emailTextView = view.findViewById(R.id.user_details);
+        emailTextView = view.findViewById(R.id.userEmail);
         logoutButton = view.findViewById(R.id.logout);
         streakText = view.findViewById(R.id.streakText);
         weightText = view.findViewById(R.id.weightText);
@@ -186,9 +186,9 @@ public class ProfileFragment extends Fragment {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {
             if (document.contains("weight")) {
-                weightText.setText("Progress:\n" + document.getDouble("weight") + " lb");
+                weightText.setText("Current Weight:\n" + document.getDouble("weight") + " kg");
             } else {
-                weightText.setText("Progress:\nN/A");
+                weightText.setText("Current Weight:\nN/A");
             }
 
             if (document.contains("recommendedCalories")) {
@@ -207,7 +207,7 @@ public class ProfileFragment extends Fragment {
                     int rank = 1;
                     for (DocumentSnapshot doc : querySnapshot) {
                         if (userEmail.equals(doc.getString("email"))) {
-                            rankingText.setText("Ranking:\n#" + rank);
+                            rankingText.setText("Leaderboard Ranking:\n#" + rank);
                             return;
                         }
                         rank++;

@@ -44,7 +44,7 @@
         android:layout_marginTop="-100dp"
         android:fontFamily="@font/orbitron_medium"
         android:text="@string/welcome_to_healthhero"
-        android:textColor="@color/white"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
 
         />
@@ -54,7 +54,7 @@
         android:layout_width="275dp"
         android:layout_height="65dp"
         android:backgroundTint="#7C8FEA"
-        android:color="@color/white"
+        android:color="@color/text_primary"
         android:text="Sign Up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,7 +68,7 @@
         android:layout_height="65dp"
         android:backgroundTint="#FBF5F5"
         android:text="Login"
-        android:textColor="@color/black"
+        android:textColor="@color/background_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.477"

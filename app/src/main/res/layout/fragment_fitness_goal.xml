@@ -4,32 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_primary"
     tools:context=".FitnessGoalFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="16dp">
+        android:padding="16dp"
+        android:paddingBottom="32dp">
 
-        <!-- Workout Title -->
+        <!-- Title -->
         <TextView
             android:id="@+id/fitnessTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
             android:text="Fitness Goals"
+            android:textSize="28sp"
+            android:textStyle="bold"
             android:textAlignment="center"
-            android:textSize="40sp" />
+            android:textColor="@color/text_primary"
+            android:paddingBottom="24dp" />
 
-        <!-- Input Card -->
+        <!-- Goal Input Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/inputCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,12 +47,16 @@
                     android:layout_height="wrap_content"
                     android:text="Select Your Goal:"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="4dp" />
 
                 <RadioGroup
                     android:id="@+id/goalRadioGroup"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp">
                     <RadioButton
                         android:id="@+id/radioBulk"
                         android:layout_width="wrap_content"
@@ -61,33 +69,34 @@
                         android:text="Cutting" />
                 </RadioGroup>
 
-                <!-- User Inputs -->
+                <!-- Input Fields -->
                 <EditText
                     android:id="@+id/etWeightGoalDiff"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Weight loss/gain to acheive goal?"
-                    android:inputType="number" />
+                    android:hint="Target weight change (kg)"
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="8dp"/>
 
                 <EditText
                     android:id="@+id/etAge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Age"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:layout_marginBottom="8dp"/>
 
                 <RadioGroup
                     android:id="@+id/genderRadioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
                     <RadioButton
                         android:id="@+id/radioMale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Male" />
-
                     <RadioButton
                         android:id="@+id/radioFemale"
                         android:layout_width="wrap_content"
@@ -100,56 +109,59 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Height (cm)"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="8dp"/>
 
                 <EditText
                     android:id="@+id/etWeight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Weight (kg)"
-                    android:inputType="numberDecimal" />
+                    android:hint="Current weight (kg)"
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="8dp"/>
 
-                <!-- Activity Level Spinner -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Activity Level:"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginTop="8dp"/>
 
                 <Spinner
                     android:id="@+id/spinnerActivityLevel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:entries="@array/activity_levels" />
+                    android:layout_marginBottom="8dp" />
 
-                <!-- Daily Caloric Intake -->
                 <EditText
                     android:id="@+id/etCaloricIntake"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Daily Caloric Intake"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:layout_marginBottom="12dp" />
 
-                <!-- Submit Button -->
                 <Button
                     android:id="@+id/btnSubmit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Submit" />
+                    android:text="Submit"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/accent_primary"
+                    android:textColor="@android:color/white"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <!-- Recommendation Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardRecommendation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <TextView
                 android:id="@+id/tvRecommendation"
@@ -158,18 +170,17 @@
                 android:padding="16dp"
                 android:text="Your recommendation will appear here."
                 android:textSize="16sp"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/text_secondary"/>
         </androidx.cardview.widget.CardView>
-        <!-- Recommendation Card -->
+
+        <!-- Initial Stats Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardInitial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <TextView
                 android:id="@+id/tvInitial"
@@ -178,18 +189,16 @@
                 android:padding="16dp"
                 android:text="Your initial stats will appear here."
                 android:textSize="16sp"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/text_secondary"/>
         </androidx.cardview.widget.CardView>
-        <!-- Update Card -->
+
+        <!-- Update Progress Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardUpdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card_background">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -200,49 +209,49 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Update your progress towards your goal."
-                    android:textSize="30sp"
-                    android:textAlignment="center" />
-                <!-- Weight Progress Update -->
+                    android:text="Update Progress"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:paddingBottom="12dp"
+                    android:textColor="@color/text_primary" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enter weight change (kg):"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/text_primary"/>
 
                 <EditText
                     android:id="@+id/etWeightUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter weight update (e.g. -0.5)"
-                    android:inputType="numberDecimal|numberSigned" />
-
+                    android:hint="e.g. -0.5 for lost weight or 0.5 for gained weight"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:layout_marginBottom="8dp"/>
 
                 <Button
                     android:id="@+id/btnUpdateProgress"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Update Progress"
-                    android:layout_marginTop="8dp" />
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/accent_primary"
+                    android:textColor="@android:color/white" />
+
                 <TextView
                     android:id="@+id/tvProgressPercent"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Goal Progress: 0%"
                     android:textSize="16sp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_gravity="center_horizontal"
-                    />
-
-
-
-
+                    android:textAlignment="center"
+                    android:textColor="@color/text_secondary"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-
     </LinearLayout>
 </ScrollView>
