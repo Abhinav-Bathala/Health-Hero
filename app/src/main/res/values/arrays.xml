@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="workout_types">
-        <item>Push-ups</item>
-        <item>Squats</item>
-        <item>Pull-ups</item>
-        <item>Plank</item>
-        <item>Burpees</item>
-        <!-- Add more workouts if you want -->
+    <string-array name="workout_categories">
+        <item>Bodyweight</item>
+        <item>Powerlifting</item>
     </string-array>
+
+    <string-array name="bodyweight_exercises">
+        <item>Push-ups</item>
+        <item>Pullups</item>
+        <item>Dips</item>
+        <item>Core</item>
+        <item>Squats</item>
+    </string-array>
+
+    <string-array name="powerlifting_exercises">
+        <item>Bench Press</item>
+        <item>Barbell Squats</item>
+        <item>Deadlift</item>
+    </string-array>
+
+
 </resources>

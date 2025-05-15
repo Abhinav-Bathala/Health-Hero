@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
+        <item>@font/acme</item>
+        <item>@font/aleo_medium</item>
         <item>@font/anek_gujarati_thin</item>
+        <item>@font/anonymous_pro</item>
         <item>@font/exo_2_thin</item>
         <item>@font/orbitron_medium</item>
         <item>@font/rajdhani_light</item>

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkoutFragment extends Fragment {
 
-    private Spinner workoutSelector;
+    private Spinner categorySelector, workoutSelector;
     private NumberPicker repsPicker, setsPicker;
     private CheckBox convertToPointsCheckbox;
     private Button submitWorkoutButton, clearHistoryButton;
@@ -74,6 +74,7 @@ public class WorkoutFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workout, container, false);
 
+        categorySelector = view.findViewById(R.id.categorySelector);
         workoutSelector = view.findViewById(R.id.workoutSelector);
         repsPicker = view.findViewById(R.id.repsPicker);
         setsPicker = view.findViewById(R.id.setsPicker);
@@ -88,10 +89,39 @@ public class WorkoutFragment extends Fragment {
         setsPicker.setMinValue(1);
         setsPicker.setMaxValue(20);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
-                R.array.workout_types, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        workoutSelector.setAdapter(adapter);
+        // Set up category selector
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.workout_categories,
+                android.R.layout.simple_spinner_item
+        );
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySelector.setAdapter(categoryAdapter);
+
+        // Set default workout options
+        updateWorkoutSpinner(R.array.bodyweight_exercises);
+
+        // Change workout spinner when category changes
+        categorySelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int arrayRes;
+                switch (position) {
+                    case 0:
+                        arrayRes = R.array.bodyweight_exercises;
+                        break;
+                    case 1:
+                        arrayRes = R.array.powerlifting_exercises;
+                        break;
+                    default:
+                        arrayRes = R.array.bodyweight_exercises;
+                }
+                updateWorkoutSpinner(arrayRes);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         workoutHistoryList = new ArrayList<>();
         workoutAdapter = new WorkoutAdapter(workoutHistoryList, (entry, position) -> deleteWorkout(entry, position));
@@ -106,13 +136,22 @@ public class WorkoutFragment extends Fragment {
         return view;
     }
 
+    private void updateWorkoutSpinner(int arrayResId) {
+        ArrayAdapter<CharSequence> workoutAdapter = ArrayAdapter.createFromResource(
+                requireContext(), arrayResId, android.R.layout.simple_spinner_item);
+        workoutAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        workoutSelector.setAdapter(workoutAdapter);
+    }
+
     private void submitWorkout() {
         String workoutType = workoutSelector.getSelectedItem().toString();
         int reps = repsPicker.getValue();
         int sets = setsPicker.getValue();
         boolean convertToPoints = convertToPointsCheckbox.isChecked();
 
-        int points = convertToPoints ? (reps * sets) : 0;
+        double multiplier = getPointMultiplier(workoutType);
+        int points = convertToPoints ? (int) Math.round(reps * sets * multiplier) : 0;
+
         totalPoints += points;
 
         String workoutEntry = "\t" + workoutType + " - Reps: " + reps + ", Sets: " + sets +
@@ -151,11 +190,11 @@ public class WorkoutFragment extends Fragment {
 
                     totalPointsText.setText("Total Points: " + totalPoints);
 
-                    submitWorkoutButton.setEnabled(true); // Re-enable button
+                    submitWorkoutButton.setEnabled(true);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Failed to add workout", e);
-                    submitWorkoutButton.setEnabled(true); // Re-enable on failure
+                    submitWorkoutButton.setEnabled(true);
 
                     Activity activity = getActivity();
                     if (activity != null) {
@@ -277,4 +316,29 @@ public class WorkoutFragment extends Fragment {
                     });
                 });
     }
+    private double getPointMultiplier(String workoutName) {
+        switch (workoutName) {
+            case "Push-ups":
+            case "Pullups":
+            case "Dips":
+            case "Squats":
+            case "Core":
+                return 1.0;
+
+            case "Bench Press":
+                return 2.0;
+
+            case "Barbell Squats":
+                return 2.0;
+
+            case "Deadlift":
+                return 2.0;
+
+            default:
+                return 1.0;
+        }
+    }
+
 }
+
+

@@ -18,14 +18,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Workout"
+            android:text="💪 Workout"
+            android:fontFamily="@font/aleo_medium"
+            android:textSize="24sp"
             android:textAlignment="center"
-            android:textSize="36sp"
             android:textColor="@color/text_primary"
+
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <!-- Workout Selector Card -->
         <androidx.cardview.widget.CardView
@@ -51,16 +54,34 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/anonymous_pro"
                     android:text="Workout Selector"
-                    android:textSize="22sp"
                     android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category Type"
+                    android:fontFamily="@font/anonymous_pro"
+                    android:textColor="@color/text_secondary"
                     android:textStyle="bold"
+                    android:layout_marginTop="8dp" />
+
+
+                <Spinner
+                    android:id="@+id/categorySelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Workout Type"
+                    android:fontFamily="@font/anonymous_pro"
                     android:textColor="@color/text_secondary"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
@@ -92,6 +113,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Reps"
+                            android:fontFamily="@font/anonymous_pro"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
@@ -117,6 +139,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Sets"
+                            android:fontFamily="@font/anonymous_pro"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp"
@@ -137,6 +160,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Convert to points"
+                    android:fontFamily="@font/aleo_medium"
                     android:textColor="@color/text_primary"
                     android:layout_marginTop="12dp" />
 
@@ -145,6 +169,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Submit Workout"
+                    android:fontFamily="@font/aleo_medium"
                     android:layout_marginTop="16dp"
                     android:backgroundTint="@color/accent_primary"
                     android:textColor="@color/text_primary"
@@ -178,6 +203,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Workout History"
+                    android:fontFamily="@font/anonymous_pro"
                     android:textSize="22sp"
                     android:textAlignment="center"
                     android:textStyle="bold"
