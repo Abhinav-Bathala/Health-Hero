@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Workout Description"
+            android:fontFamily="@font/anonymous_pro"
             android:textSize="16sp"
             android:textColor="@android:color/black"
             android:layout_alignParentStart="true"/>

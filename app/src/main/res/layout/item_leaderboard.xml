@@ -10,11 +10,13 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:textSize="16sp"
+        android:fontFamily="@font/anonymous_pro"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/pointsText"
         android:layout_width="wrap_content"
         android:textSize="16sp"
+        android:fontFamily="@font/aleo_medium"
         android:layout_height="wrap_content"/>
 </LinearLayout>
