@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:text="🥗 Nutrition"
             android:fontFamily="@font/aleo_medium"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"/>
@@ -53,18 +53,20 @@
                     android:id="@+id/meal_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/text_secondary"
+                    android:fontFamily="@font/roboto_serif"
                     android:hint="Enter meal name"
-                    android:fontFamily="@font/anonymous_pro"
                     android:inputType="text"
                     android:textColor="@color/text_primary"
-                    android:backgroundTint="@color/text_secondary" />
+                    android:textSize="17dp" />
 
                 <EditText
                     android:id="@+id/calorie_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter calorie count"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
+                    android:textSize="17dp"
                     android:inputType="number"
                     android:textColor="@color/text_primary"
                     android:backgroundTint="@color/text_secondary" />
@@ -74,7 +76,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Additional notes (optional)"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
+                    android:textSize="17dp"
                     android:inputType="textMultiLine"
                     android:textColor="@color/text_primary"
                     android:backgroundTint="@color/text_secondary" />

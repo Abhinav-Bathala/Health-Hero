@@ -12,24 +12,28 @@
         android:textStyle="bold"
         android:textSize="16sp"
         android:text="Meal Name"
+        android:fontFamily="@font/aleo_medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/tvCalories"
         android:text="Calories"
+        android:fontFamily="@font/anonymous_pro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/tvNotes"
         android:text="Notes"
+        android:fontFamily="@font/anonymous_pro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/tvTimestamp"
         android:text="Date and Time"
+        android:fontFamily="@font/anonymous_pro"
         android:textSize="12sp"
         android:textColor="#777"
         android:layout_width="wrap_content"

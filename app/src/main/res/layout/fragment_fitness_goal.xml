@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:text="🎯 Fitness Goal"
             android:fontFamily="@font/aleo_medium"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:layout_marginTop="15dp"
             android:layout_gravity="center_horizontal"/>
@@ -44,14 +44,15 @@
 
                 <!-- Goal Selection -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Select Your Goal:"
-                    android:fontFamily="@font/anonymous_pro"
-                    android:textSize="16sp"
+                    android:text="Select Your Goal"
+                    android:fontFamily="@font/aleo_medium"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:paddingBottom="4dp" />
+                    android:textAlignment="center"
+                    android:paddingBottom="12dp"
+                    android:textColor="@color/text_primary" />
 
                 <RadioGroup
                     android:id="@+id/goalRadioGroup"
@@ -63,13 +64,13 @@
                         android:id="@+id/radioBulk"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/anonymous_pro"
+                        android:fontFamily="@font/roboto_serif"
                         android:text="Bulking" />
                     <RadioButton
                         android:id="@+id/radioCut"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/anonymous_pro"
+                        android:fontFamily="@font/roboto_serif"
                         android:text="Cutting" />
                 </RadioGroup>
 
@@ -79,7 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Target weight change (kg)"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/roboto_serif"
                     android:inputType="numberDecimal"
                     android:layout_marginBottom="8dp"/>
 
@@ -88,7 +90,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Age"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/roboto_serif"
                     android:inputType="number"
                     android:layout_marginBottom="8dp"/>
 
@@ -102,13 +105,13 @@
                         android:id="@+id/radioMale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/anonymous_pro"
+                        android:fontFamily="@font/roboto_serif"
                         android:text="Male" />
                     <RadioButton
                         android:id="@+id/radioFemale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/anonymous_pro"
+                        android:fontFamily="@font/roboto_serif"
                         android:text="Female" />
                 </RadioGroup>
 
@@ -117,8 +120,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Height (cm)"
+                    android:textSize="16dp"
                     android:inputType="numberDecimal"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
                     android:layout_marginBottom="8dp"/>
 
                 <EditText
@@ -126,7 +130,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Current weight (kg)"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/roboto_serif"
                     android:inputType="numberDecimal"
                     android:layout_marginBottom="8dp"/>
 
@@ -144,6 +149,7 @@
                     android:id="@+id/spinnerActivityLevel"
                     android:layout_width="349dp"
                     android:layout_height="53dp"
+                    android:fontFamily="@font/anonymous_pro"
                     android:layout_marginBottom="8dp" />
 
                 <EditText
@@ -151,8 +157,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Daily Caloric Intake"
+                    android:textSize="16dp"
                     android:inputType="numberDecimal"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
                     android:layout_marginBottom="12dp" />
 
                 <Button
@@ -183,7 +190,7 @@
                 android:padding="16dp"
                 android:text="Your recommendation will appear here."
 
-                android:fontFamily="@font/anonymous_pro"
+                android:fontFamily="@font/roboto_serif"
                 android:textSize="16sp"
                 android:textColor="@color/text_secondary"/>
         </androidx.cardview.widget.CardView>
@@ -203,7 +210,7 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:text="Your initial stats will appear here."
-                android:fontFamily="@font/anonymous_pro"
+                android:fontFamily="@font/roboto_serif"
                 android:textSize="16sp"
                 android:textColor="@color/text_secondary"/>
         </androidx.cardview.widget.CardView>
@@ -237,7 +244,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enter weight change (kg):"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp"
@@ -248,7 +255,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="e.g. -0.5/lose or 0.5/gain"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:textSize="16dp"
+                    android:fontFamily="@font/roboto_serif"
                     android:inputType="numberDecimal|numberSigned"
                     android:layout_marginBottom="8dp"/>
 

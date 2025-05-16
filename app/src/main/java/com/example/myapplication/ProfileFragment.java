@@ -207,7 +207,7 @@ public class ProfileFragment extends Fragment {
                     int rank = 1;
                     for (DocumentSnapshot doc : querySnapshot) {
                         if (userEmail.equals(doc.getString("email"))) {
-                            rankingText.setText("Leaderboard Ranking:\n#" + rank);
+                            rankingText.setText("Leaderboard Rank:\n#" + rank);
                             return;
                         }
                         rank++;

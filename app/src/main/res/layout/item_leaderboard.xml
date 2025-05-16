@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:fontFamily="@font/anonymous_pro"
+        android:fontFamily="@font/roboto_serif"
         android:layout_height="wrap_content"/>
 
     <TextView
