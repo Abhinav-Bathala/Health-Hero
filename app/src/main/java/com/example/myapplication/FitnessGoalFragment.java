@@ -55,7 +55,12 @@ public class FitnessGoalFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+
         super.onViewCreated(view, savedInstanceState);
+
+
+
 
         // ‑‑‑ view binding ------------------------------------------------------
         goalRadioGroup     = view.findViewById(R.id.goalRadioGroup);
@@ -269,6 +274,11 @@ public class FitnessGoalFragment extends Fragment {
         userData.put("message", message);
         userData.put("timeToReachGoal", timeToReachGoal);
         userData.put("weightGoalDiff", (double) weightGoalDiff);
+        userData.put("originalWeightGoalDiff", weightGoalDiff);
+        userData.put("goalProgressPercent", 0.0);
+
+
+
 
         db.collection("users").document(uid)
                 .set(userData, SetOptions.merge())
@@ -312,12 +322,11 @@ public class FitnessGoalFragment extends Fragment {
                     }
 
                     Double currentWeightDiff = documentSnapshot.getDouble("weightGoalDiff");
+                    Double originalGoal = documentSnapshot.getDouble("originalWeightGoalDiff");
+
                     if (currentWeightDiff == null) return;
 
-                    double newWeightDiff = currentWeightDiff - weightUpdate;
-
-                    // original goal (store once)
-                    Double originalGoal = documentSnapshot.getDouble("originalWeightGoalDiff");
+                    // Initialize originalGoal if null
                     if (originalGoal == null) {
                         originalGoal = currentWeightDiff;
                         Map<String, Object> originSet = new HashMap<>();
@@ -325,14 +334,25 @@ public class FitnessGoalFragment extends Fragment {
                         db.collection("users").document(uid).set(originSet, SetOptions.merge());
                     }
 
-                    // update progress %
-                    double percentComplete = 100 * (originalGoal - newWeightDiff) / originalGoal;
+                    // Check if already completed
+                    double percentComplete = 100 * (originalGoal - currentWeightDiff) / originalGoal;
                     percentComplete = Math.max(0, Math.min(100, percentComplete));
-                    tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", percentComplete));
 
-                    // write weight diff back
+                    if (percentComplete >= 100) {
+                        Toast.makeText(getContext(), "Set a new goal now and update your stats!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Apply update
+                    double newWeightDiff = currentWeightDiff - weightUpdate;
+                    double updatedPercent = 100 * (originalGoal - newWeightDiff) / originalGoal;
+                    updatedPercent = Math.max(0, Math.min(100, updatedPercent));
+
+                    tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", updatedPercent));
+
                     Map<String, Object> updateMap = new HashMap<>();
                     updateMap.put("weightGoalDiff", newWeightDiff);
+
                     double percentChangeThisUpdate = (weightUpdate / originalGoal) * 100;
                     int pointsEarned = Math.round((float) percentChangeThisUpdate);
 
@@ -348,10 +368,12 @@ public class FitnessGoalFragment extends Fragment {
                                     Toast.makeText(getContext(),
                                             "Update failed: " + e.getMessage(),
                                             Toast.LENGTH_SHORT).show());
+
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Error accessing Firestore", Toast.LENGTH_SHORT).show());
     }
+
 
     // ─────────────────────────────────────────────────────────────
     // AWARD POINTS

@@ -102,7 +102,7 @@ public class ProfileFragment extends Fragment {
 
             boolean streakIncreased = false;
 
-            if (lastCheckIn == null || lastCheckIn.compareTo(yesterdayStr) < 0) {
+            if (lastCheckIn == null || lastCheckIn.compareTo(yesterdayStr) < 0){
                 currentStreak = 1;
                 streakIncreased = true;
             } else if (lastCheckIn.equals(yesterdayStr)) {
