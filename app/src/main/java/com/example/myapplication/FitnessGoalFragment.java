@@ -147,10 +147,18 @@ public class FitnessGoalFragment extends Fragment {
                         .append("Weight: ").append(weightVal).append(" kg\n")
                         .append("Activity Level: ").append(activity);
 
-                if (weightDiff != null && goal != null) {
-                    String sign = goal.equals("Bulking") ? "+" : "-";
-                    stats.append("\nDesired Weight Change: ").append(sign).append(weightDiff).append(" kg");
+                if (weightDiff != null) {
+                    if (Math.abs(weightDiff) < 0.5) {
+                        stats.append("\nDesired Weight Change: Goal reached!");
+                    } else {
+                        double roundedWeightDiff = Math.round(Math.abs(weightDiff) * 10.0) / 10.0;
+                        String sign = weightDiff > 0 ? "+" : "-";
+                        stats.append("\nDesired Weight Change: ").append(sign).append(roundedWeightDiff).append(" kg");
+                    }
                 }
+
+
+
             } else {
                 stats.append("No initial stats found.");
             }
