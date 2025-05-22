@@ -19,9 +19,11 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView emailText, pointsText;
+        TextView rankText, emailText, pointsText;
+
         public ViewHolder(View view) {
             super(view);
+            rankText = view.findViewById(R.id.rankText);
             emailText = view.findViewById(R.id.emailText);
             pointsText = view.findViewById(R.id.pointsText);
         }
@@ -38,6 +40,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LeaderboardEntry entry = leaderboardList.get(position);
+        holder.rankText.setText(String.valueOf(position + 1));
         holder.emailText.setText(entry.getEmail());
         holder.pointsText.setText("Points: " + entry.getPoints());
     }

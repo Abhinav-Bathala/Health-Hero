@@ -3,6 +3,7 @@
     <string-array name="workout_categories">
         <item>Bodyweight</item>
         <item>Powerlifting</item>
+        <item>Cardio</item>
     </string-array>
 
     <string-array name="bodyweight_exercises">
@@ -17,6 +18,17 @@
         <item>Bench Press</item>
         <item>Barbell Squats</item>
         <item>Deadlift</item>
+    </string-array>
+
+
+    <string-array name="cardio_exercises">
+        <item>Walking</item>
+        <item>Jogging/Running</item>
+        <item>Hiking</item>
+        <item>Swimming/Rowing</item>
+        <item>Biking</item>
+        <item>Other Sports</item>
+        <item>Other Cardio</item>
     </string-array>
 
 

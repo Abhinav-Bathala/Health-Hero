@@ -151,6 +151,9 @@
             android:layout_gravity="center_horizontal"
             android:backgroundTint="@color/accent_primary"
             android:textColor="@color/text_primary" />
+
+
+        
         <TextView
             android:id="@+id/extraInfo"
             android:layout_width="wrap_content"

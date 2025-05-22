@@ -279,9 +279,9 @@ public class NutritionFragment extends Fragment {
     }
     private void disableInputs() {
         etMealName.setEnabled(false);
-        etCalories .setEnabled(false);
-        etNotes    .setEnabled(false);
-        btnSubmit  .setEnabled(false);
+        etCalories.setEnabled(false);
+        etNotes.setEnabled(false);
+        btnSubmit.setEnabled(false);
     }
 
     private void checkIfFinishedAndDisable(String uid) {
@@ -292,7 +292,7 @@ public class NutritionFragment extends Fragment {
                 .collection("dailyCalories")
                 .document(today);
         calorieRef.get().addOnSuccessListener(snap -> {
-            Boolean done = snap.getBoolean("finishedDay");
+            Boolean done = snap.getBoolean("finisedDay");
             if (done != null && done) {
                 disableInputs();
             }

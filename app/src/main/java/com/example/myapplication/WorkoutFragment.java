@@ -24,6 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkoutFragment extends Fragment {
 
+    private LinearLayout durationLayout;
+    private NumberPicker durationPicker;
+
     private Spinner categorySelector, workoutSelector;
     private NumberPicker repsPicker, setsPicker;
     private CheckBox convertToPointsCheckbox;
@@ -84,10 +87,22 @@ public class WorkoutFragment extends Fragment {
         totalPointsText = view.findViewById(R.id.totalPointsText);
         recyclerView = view.findViewById(R.id.workoutHistoryRecyclerView);
 
+        LinearLayout repsColumn = view.findViewById(R.id.repsColumn);
+        LinearLayout setsColumn = view.findViewById(R.id.setsColumn);
+
+        //For Sets and Reps
         repsPicker.setMinValue(1);
         repsPicker.setMaxValue(100);
         setsPicker.setMinValue(1);
         setsPicker.setMaxValue(20);
+
+        //For Time
+        durationLayout = view.findViewById(R.id.durationLayout);
+        durationPicker = view.findViewById(R.id.durationPicker);
+        durationPicker.setMinValue(1);
+        durationPicker.setMaxValue(120); // 2 hours max
+        durationLayout.setVisibility(View.GONE);
+
 
         // Set up category selector
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(
@@ -103,21 +118,28 @@ public class WorkoutFragment extends Fragment {
 
         // Change workout spinner when category changes
         categorySelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int arrayRes;
+
+                boolean isCardio = position == 2;
+
+                repsColumn.setVisibility(isCardio ? View.GONE : View.VISIBLE);
+                setsColumn.setVisibility(isCardio ? View.GONE : View.VISIBLE);
+                durationLayout.setVisibility(isCardio ? View.VISIBLE : View.GONE);
+
                 switch (position) {
-                    case 0:
-                        arrayRes = R.array.bodyweight_exercises;
-                        break;
-                    case 1:
-                        arrayRes = R.array.powerlifting_exercises;
-                        break;
-                    default:
-                        arrayRes = R.array.bodyweight_exercises;
+                    case 0: arrayRes = R.array.bodyweight_exercises; break;
+                    case 1: arrayRes = R.array.powerlifting_exercises; break;
+                    case 2: arrayRes = R.array.cardio_exercises; break;
+                    default: arrayRes = R.array.bodyweight_exercises;
                 }
+
                 updateWorkoutSpinner(arrayRes);
             }
+
+
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -145,25 +167,35 @@ public class WorkoutFragment extends Fragment {
 
     private void submitWorkout() {
         String workoutType = workoutSelector.getSelectedItem().toString();
-        int reps = repsPicker.getValue();
-        int sets = setsPicker.getValue();
         boolean convertToPoints = convertToPointsCheckbox.isChecked();
+        boolean isCardio = categorySelector.getSelectedItemPosition() == 2;
 
-        double multiplier = getPointMultiplier(workoutType);
-        int points = convertToPoints ? (int) Math.round(reps * sets * multiplier) : 0;
+        int points = 0;
+        String workoutEntry;
+
+        if (isCardio) {
+            int duration = durationPicker.getValue(); // in minutes
+            double multiplier = getPointMultiplier(workoutType);
+            points = convertToPoints ? (int) Math.round((duration / 10.0) * multiplier) : 0;
+
+            workoutEntry = "\t" + workoutType + " - Duration: " + duration + " min" +
+                    (convertToPoints ? ", Points: " + points : "");
+        } else {
+            int reps = repsPicker.getValue();
+            int sets = setsPicker.getValue();
+            double multiplier = getPointMultiplier(workoutType);
+            points = convertToPoints ? (int) Math.round(reps * sets * multiplier) : 0;
+
+            workoutEntry = "\t" + workoutType + " - Reps: " + reps + ", Sets: " + sets +
+                    (convertToPoints ? ", Points: " + points : "");
+        }
 
         totalPoints += points;
-
-        String workoutEntry = "\t" + workoutType + " - Reps: " + reps + ", Sets: " + sets +
-                (convertToPoints ? ", Points: " + points : "");
-
         WorkoutEntry entry = new WorkoutEntry(workoutEntry, points);
-
-        // Disable button to prevent double taps
         submitWorkoutButton.setEnabled(false);
-
         addWorkoutToFirestore(entry);
     }
+
 
     private void addWorkoutToFirestore(WorkoutEntry entry) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -332,6 +364,17 @@ public class WorkoutFragment extends Fragment {
                 return 2.0;
 
             case "Deadlift":
+                return 2.0;
+
+            case "Walking":
+                return 1.0;
+
+            case "Joggling/Running":
+            case "Hiking":
+            case "Swimming/Rowing":
+            case "Biking":
+            case "Other Sports":
+            case "Other Cardio":
                 return 2.0;
 
             default:
