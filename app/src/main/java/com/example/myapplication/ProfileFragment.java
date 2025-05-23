@@ -181,7 +181,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    
+
     private void loadFitnessData(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {

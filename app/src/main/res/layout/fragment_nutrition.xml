@@ -21,7 +21,7 @@
             android:textSize="30sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="24dp"/>
 
         <!-- Card for Calorie Intake Tracker -->
         <androidx.cardview.widget.CardView
