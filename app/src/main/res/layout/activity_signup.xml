@@ -35,31 +35,6 @@
         app:srcCompat="@drawable/image_removebg_preview" />
 
 
-    <Button
-        android:id="@+id/google_signup"
-        android:layout_width="275dp"
-        android:layout_height="65dp"
-        android:backgroundTint="#FBF5F5"
-        android:text="     Continue with Google"
-        android:textColor="@color/background_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.912" />
-
-    <ImageView
-        android:id="@+id/googleimg_signup"
-        android:layout_width="27dp"
-        android:layout_height="26dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.26"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.889"
-        app:srcCompat="@drawable/googleg_standard_color_18" />
-
     <TextView
         android:id="@+id/createtxt_signup"
         android:layout_width="wrap_content"

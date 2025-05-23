@@ -177,7 +177,7 @@
                 android:id="@+id/pointsText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Points\n___ XP"
+                android:text="Points:\n___"
                 android:textColor="@color/text_primary"
                 android:fontFamily="@font/aleo_medium"
                 android:gravity="center"

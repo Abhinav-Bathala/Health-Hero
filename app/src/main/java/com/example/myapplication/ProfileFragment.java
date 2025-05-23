@@ -30,7 +30,7 @@ import java.util.*;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView emailTextView, streakText, weightText, calorieText, rankingText, welcomeText, quoteText;
+    private TextView emailTextView, streakText, weightText, calorieText, rankingText, welcomeText, quoteText, pointsText;
     private Button logoutButton;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -54,6 +54,7 @@ public class ProfileFragment extends Fragment {
         rankingText = view.findViewById(R.id.rankingText);
         welcomeText = view.findViewById(R.id.welcometext);
         quoteText = view.findViewById(R.id.quotetext);
+        pointsText = view.findViewById(R.id.pointsText);
 
         if (user != null) {
             emailTextView.setText(user.getEmail());
@@ -180,8 +181,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-
-
+    
     private void loadFitnessData(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {
@@ -195,6 +195,9 @@ public class ProfileFragment extends Fragment {
                 calorieText.setText("Calorie Intake:\n" + document.getLong("recommendedCalories") + " kcal");
             } else {
                 calorieText.setText("Calorie Intake:\nN/A");
+            }
+            if(document.contains("points")) {
+                pointsText.setText("Points:\n" + document.getLong("points"));
             }
         }).addOnFailureListener(e -> Log.e("FitnessData", "Failed to load fitness data", e));
     }
