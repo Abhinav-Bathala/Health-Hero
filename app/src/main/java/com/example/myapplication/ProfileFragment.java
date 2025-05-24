@@ -145,7 +145,7 @@ public class ProfileFragment extends Fragment {
 
             if (!quotes.isEmpty()) {
                 String selectedQuote = quotes.get(new Random().nextInt(quotes.size()));
-                quoteText.setText("\" + selectedQuote + \"");
+                quoteText.setText(selectedQuote);
             }
         } catch (Exception e) {
             Log.e("QuoteError", "Could not load quote", e);
@@ -168,7 +168,7 @@ public class ProfileFragment extends Fragment {
 
             if (!quotes.isEmpty()) {
                 String selectedQuote = quotes.get(new Random().nextInt(quotes.size()));
-                quoteText.setText("\"" + selectedQuote + "\"");
+                quoteText.setText(selectedQuote);
 
                 // Save the quote to Firestore
                 Map<String, Object> quoteUpdate = new HashMap<>();

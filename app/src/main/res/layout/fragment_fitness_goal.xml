@@ -182,17 +182,29 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/card_background">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Caloric Target"
+                android:fontFamily="@font/aleo_medium"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:textColor="@color/text_primary" />
+
 
             <TextView
                 android:id="@+id/tvRecommendation"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="18dp"
                 android:text="Your recommendation will appear here."
-
+                android:layout_marginTop="38dp"
                 android:fontFamily="@font/roboto_serif"
                 android:textSize="16sp"
-                android:textColor="@color/text_secondary"/>
+                android:textColor="@color/text_primary"/>
         </androidx.cardview.widget.CardView>
 
         <!-- Initial Stats Card -->
@@ -203,16 +215,28 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/card_background">
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Initial Stats"
+                android:fontFamily="@font/aleo_medium"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:textColor="@color/text_primary" />
             <TextView
                 android:id="@+id/tvInitial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
+                android:layout_marginTop="38dp"
+
                 android:text="Your initial stats will appear here."
                 android:fontFamily="@font/roboto_serif"
                 android:textSize="16sp"
-                android:textColor="@color/text_secondary"/>
+                android:textColor="@color/text_primary"/>
         </androidx.cardview.widget.CardView>
 
         <!-- Update Progress Card -->
@@ -254,7 +278,7 @@
                     android:id="@+id/etWeightUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="e.g. -0.5/lose or 0.5/gain"
+                    android:hint="Enter the magnitude of weight change"
                     android:textSize="16dp"
                     android:fontFamily="@font/roboto_serif"
                     android:inputType="numberDecimal|numberSigned"

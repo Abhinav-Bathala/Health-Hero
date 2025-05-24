@@ -1,79 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".MainActivity">
 
+    <!-- Background Image -->
     <ImageView
         android:id="@+id/background_splash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/screenshot_2025_03_13_143627__1_"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/screenshot_2025_03_13_143627__1_" />
+
+    <!-- Logo -->
+
+    <!-- Welcome Text -->
 
     <ImageView
         android:id="@+id/logo_splash"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintHeight_percent="0.6"
-        android:translationY="-100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="314dp"
+        android:layout_height="276dp"
+        android:layout_marginTop="64dp"
+        android:contentDescription="Logo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.06"
+        app:layout_constraintWidth_percent="0.6"
         app:srcCompat="@drawable/image_removebg_preview" />
 
     <TextView
         android:id="@+id/welcome_splash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/logo_splash"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="-100dp"
-        android:fontFamily="@font/orbitron_medium"
         android:text="@string/welcome_to_healthhero"
         android:textColor="@color/text_primary"
-        android:textSize="18sp"
+        android:textSize="24sp"
+        android:fontFamily="@font/orbitron_medium"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/logo_splash"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        />
-
+    <!-- Sign Up Button -->
     <Button
         android:id="@+id/signup_splash"
-        android:layout_width="275dp"
-        android:layout_height="65dp"
-        android:backgroundTint="#7C8FEA"
-        android:color="@color/text_primary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginHorizontal="50dp"
         android:text="Sign Up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="@color/accent_primary"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="8dp"
+        app:cornerRadius="50dp"
+        app:layout_constraintTop_toBottomOf="@id/welcome_splash"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Login Button -->
     <Button
         android:id="@+id/login_splash"
-        android:layout_width="275dp"
-        android:layout_height="65dp"
-        android:backgroundTint="#FBF5F5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="50dp"
         android:text="Login"
-        android:textColor="@color/background_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.477"
+        android:textSize="20sp"
+        android:textColor="@color/text_primary"
+        android:backgroundTint="#424242"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="8dp"
+        app:cornerRadius="50dp"
+        app:layout_constraintTop_toBottomOf="@id/signup_splash"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.708" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

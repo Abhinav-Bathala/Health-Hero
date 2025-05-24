@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +42,6 @@ public class Signup extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword, editTextName;
     Button buttonReg;
     FirebaseAuth mAuth;
-    ProgressBar progressBar;
     TextView textView;
 
     FirebaseFirestore fStore;
@@ -92,7 +90,6 @@ public class Signup extends AppCompatActivity {
     editTextPassword = findViewById(R.id.password_signup);
     editTextName = findViewById(R.id.name_signup);
     buttonReg = findViewById(R.id.signup_signup);
-    progressBar = findViewById(R.id.progressBar_signup);
     textView = findViewById(R.id.createtxt_signup);
     textView.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -106,7 +103,6 @@ public class Signup extends AppCompatActivity {
     buttonReg.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            progressBar.setVisibility(View.VISIBLE);
             String email, password, name;
             email = String.valueOf(editTextEmail.getText());
             password = String.valueOf(editTextPassword.getText());
@@ -131,7 +127,6 @@ public class Signup extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            progressBar.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
                                 Toast.makeText(Signup.this, "Account Created.",
                                         Toast.LENGTH_SHORT).show();

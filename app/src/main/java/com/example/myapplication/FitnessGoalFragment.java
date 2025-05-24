@@ -141,8 +141,7 @@ public class FitnessGoalFragment extends Fragment {
             Double weightDiff  = documentSnapshot.getDouble("weightGoalDiff");
 
             if (ageVal != null && heightVal != null && weightVal != null && activity != null) {
-                stats.append("Initial Stats:\n")
-                        .append("Age: ").append(ageVal).append(" yrs\n")
+                stats.append("Age: ").append(ageVal).append(" yrs\n")
                         .append("Height: ").append(heightVal).append(" cm\n")
                         .append("Weight: ").append(weightVal).append(" kg\n")
                         .append("Activity Level: ").append(activity);
@@ -186,21 +185,20 @@ public class FitnessGoalFragment extends Fragment {
     // ─────────────────────────────────────────────────────────────
 
     private void handleSubmit() {
-        // grab selections ------------------------------------------------------
-        int   selectedGoalId   = goalRadioGroup.getCheckedRadioButtonId();
-        int   selectedGenderId = genderRadioGroup.getCheckedRadioButtonId();
+        int selectedGoalId = goalRadioGroup.getCheckedRadioButtonId();
+        int selectedGenderId = genderRadioGroup.getCheckedRadioButtonId();
 
         String goal = selectedGoalId == R.id.radioBulk ? "Bulking" :
-                selectedGoalId == R.id.radioCut  ? "Cutting" : "";
+                selectedGoalId == R.id.radioCut ? "Cutting" : "";
 
-        String gender = selectedGenderId == R.id.radioMale   ? "Male" :
+        String gender = selectedGenderId == R.id.radioMale ? "Male" :
                 selectedGenderId == R.id.radioFemale ? "Female" : "";
 
-        String ageStr           = etAge.getText().toString().trim();
-        String heightStr        = etHeight.getText().toString().trim();
-        String weightStr        = etWeight.getText().toString().trim();
-        String activityLevel    = spinnerActivityLevel.getSelectedItem().toString();
-        String weightGoalDiffStr= etWeightGoalDiff.getText().toString().trim();
+        String ageStr = etAge.getText().toString().trim();
+        String heightStr = etHeight.getText().toString().trim();
+        String weightStr = etWeight.getText().toString().trim();
+        String activityLevel = spinnerActivityLevel.getSelectedItem().toString();
+        String weightGoalDiffStr = etWeightGoalDiff.getText().toString().trim();
 
         if (goal.isEmpty() || gender.isEmpty() || ageStr.isEmpty() ||
                 heightStr.isEmpty() || weightStr.isEmpty() || weightGoalDiffStr.isEmpty()) {
@@ -208,7 +206,6 @@ public class FitnessGoalFragment extends Fragment {
             return;
         }
 
-        // numeric parsing ------------------------------------------------------
         int age;
         float height, weight, weightGoalDiff;
         try {
@@ -216,12 +213,19 @@ public class FitnessGoalFragment extends Fragment {
             height = Float.parseFloat(heightStr);
             weight = Float.parseFloat(weightStr);
             weightGoalDiff = Float.parseFloat(weightGoalDiffStr);
+
+            // Adjust sign: positive for bulking, negative for cutting
+            if (goal.equals("Cutting")) {
+                weightGoalDiff = -Math.abs(weightGoalDiff);
+            } else if (goal.equals("Bulking")) {
+                weightGoalDiff = Math.abs(weightGoalDiff);
+            }
         } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Invalid number input", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // calculations ---------------------------------------------------------
+
         double bmr = gender.equals("Male")
                 ? 10 * weight + 6.25 * height - 5 * age + 5
                 : 10 * weight + 6.25 * height - 5 * age - 161;
@@ -244,25 +248,16 @@ public class FitnessGoalFragment extends Fragment {
         }
 
         double tdee = bmr * activityMultiplier;
-        int recommendedCalories = goal.equals("Bulking")
-                ? (int) (tdee + 500)
-                : (int) (tdee - 500);
-
-        double daysToReachGoal = (weightGoalDiff * 7700) / 500; // 500 kcal deficit/surplus a day
-        String timeToReachGoal = "It should take approximately " +
-                Math.round(daysToReachGoal) +
-                " days to reach your weight goal in a healthy manner.";
-
-        // output to UI ---------------------------------------------------------
+        int recommendedCalories = goal.equals("Bulking") ? (int) (tdee + 500) : (int) (tdee - 500);
+        double daysToReachGoal = (weightGoalDiff * 7700) / 500;
+        String timeToReachGoal = "It should take approximately " + Math.round(daysToReachGoal) + " days to reach your weight goal in a healthy manner.";
         String message = "Your estimated Total Daily Energy Expenditure: " +
                 (int) tdee + " kcal/day\n" +
-                "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day\n" +
-                timeToReachGoal;
+                "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
+
 
         tvRecommendation.setText(message);
-        tvInitial.setText(timeToReachGoal);
 
-        // save to Firestore ----------------------------------------------------
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
@@ -285,13 +280,12 @@ public class FitnessGoalFragment extends Fragment {
         userData.put("originalWeightGoalDiff", weightGoalDiff);
         userData.put("goalProgressPercent", 0.0);
 
-
-
-
         db.collection("users").document(uid)
                 .set(userData, SetOptions.merge())
-                .addOnSuccessListener(aVoid ->
-                        Toast.makeText(getContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show();
+                    loadExistingData();  // ✅ Refresh UI to reflect changes
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }

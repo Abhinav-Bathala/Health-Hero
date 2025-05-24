@@ -221,8 +221,13 @@ public class WorkoutFragment extends Fragment {
                             .addOnFailureListener(e -> Log.e("Firestore", "Error updating points", e));
 
                     totalPointsText.setText("Total Points: " + totalPoints);
-
                     submitWorkoutButton.setEnabled(true);
+
+                    // Toast for success
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        Toast.makeText(activity, "Workout added successfully!", Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Failed to add workout", e);
