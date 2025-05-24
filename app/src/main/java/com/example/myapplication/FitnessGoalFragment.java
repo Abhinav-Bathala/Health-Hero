@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FitnessGoalFragment extends Fragment {
-
+    // UI components
     private RadioGroup goalRadioGroup, genderRadioGroup;
     private EditText etAge, etHeight, etWeight, etCaloricIntake,
             etWeightGoalDiff, etWeightUpdate;
@@ -37,32 +37,26 @@ public class FitnessGoalFragment extends Fragment {
 
     private FirebaseFirestore db;
 
-    /** Activity‑level labels shown in the Spinner and used in the multiplier switch. */
+    // Constants for the activity level options used in the spinner
     private static final String[] ACTIVITY_OPTIONS = {
             "Sedentary",
             "Lightly Active",
             "Active",
             "Very Active"
     };
-
+    // Constructor linking layout
     public FitnessGoalFragment() {
         super(R.layout.fragment_fitness_goal);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // LIFECYCLE
-    // ─────────────────────────────────────────────────────────────
-
+    // ───────────────────────────────
+    // Fragment Lifecycle
+    // ───────────────────────────────
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-
         super.onViewCreated(view, savedInstanceState);
 
-
-
-
-        // ‑‑‑ view binding ------------------------------------------------------
+        // Bind UI elements to variables
         goalRadioGroup     = view.findViewById(R.id.goalRadioGroup);
         genderRadioGroup   = view.findViewById(R.id.genderRadioGroup);
         etAge              = view.findViewById(R.id.etAge);
@@ -78,10 +72,10 @@ public class FitnessGoalFragment extends Fragment {
         tvInitial            = view.findViewById(R.id.tvInitial);
         tvProgressPercent    = view.findViewById(R.id.tvProgressPercent);
 
-        // ‑‑‑ Firestore ---------------------------------------------------------
+        // Firestore instance
         db = FirebaseFirestore.getInstance();
 
-        // ‑‑‑ Spinner: plug in choices so it never crashes ----------------------
+        // Setup activity level spinner with options
         ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -91,18 +85,17 @@ public class FitnessGoalFragment extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item);
         spinnerActivityLevel.setAdapter(activityAdapter);
 
-        // ‑‑‑ Load any previously saved data -----------------------------------
+        // Load saved user data from Firestore
         loadExistingData();
 
-        // ‑‑‑ Button listeners --------------------------------------------------
+        // Set button click handlers
         btnSubmit.setOnClickListener(v -> handleSubmit());
         btnUpdateProgress.setOnClickListener(v -> handleProgressUpdate());
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // LOAD EXISTING USER DATA
-    // ─────────────────────────────────────────────────────────────
-
+    // ───────────────────────────────
+    // Load existing user data from Firestore
+    // ───────────────────────────────
     private void loadExistingData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -118,7 +111,7 @@ public class FitnessGoalFragment extends Fragment {
                 return;
             }
 
-            // Show TDEE + calories if they were stored earlier
+            // Load and display recommendation if available
             Long tdeeVal = documentSnapshot.getLong("tdee");
             Long recCal  = documentSnapshot.getLong("recommendedCalories");
             String goal  = documentSnapshot.getString("goal");
@@ -131,7 +124,7 @@ public class FitnessGoalFragment extends Fragment {
                 tvRecommendation.setText("No recommendation data found. Please submit your goal.");
             }
 
-            // Initial stats block
+            // Load and display initial stats
             StringBuilder stats = new StringBuilder();
             Long ageVal        = documentSnapshot.getLong("age");
             Double heightVal   = documentSnapshot.getDouble("height");
@@ -165,7 +158,7 @@ public class FitnessGoalFragment extends Fragment {
             if (timeMsg != null) stats.append("\n\n").append(timeMsg);
             tvInitial.setText(stats.toString());
 
-            // Progress %
+            // Load and display progress percent
             Double originalGoal   = documentSnapshot.getDouble("originalWeightGoalDiff");
             Double currentGoalDiff= documentSnapshot.getDouble("weightGoalDiff");
             if (originalGoal != null && currentGoalDiff != null && originalGoal != 0) {
@@ -180,11 +173,11 @@ public class FitnessGoalFragment extends Fragment {
         );
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // SUBMIT (CREATE/UPDATE GOAL)
-    // ─────────────────────────────────────────────────────────────
-
+    // ───────────────────────────────
+    // Submit fitness goal: calculate TDEE, recommend calories, save to Firestore
+    // ───────────────────────────────
     private void handleSubmit() {
+        // Validate user input
         int selectedGoalId = goalRadioGroup.getCheckedRadioButtonId();
         int selectedGenderId = genderRadioGroup.getCheckedRadioButtonId();
 
@@ -205,7 +198,7 @@ public class FitnessGoalFragment extends Fragment {
             Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        // Parse input safely
         int age;
         float height, weight, weightGoalDiff;
         try {
@@ -225,7 +218,7 @@ public class FitnessGoalFragment extends Fragment {
             return;
         }
 
-
+        // Calculate BMR and TDEE
         double bmr = gender.equals("Male")
                 ? 10 * weight + 6.25 * height - 5 * age + 5
                 : 10 * weight + 6.25 * height - 5 * age - 161;
@@ -286,16 +279,15 @@ public class FitnessGoalFragment extends Fragment {
                 .set(userData, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show();
-                    loadExistingData();  // ✅ Refresh UI to reflect changes
+                    loadExistingData();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // UPDATE PROGRESS
-    // ─────────────────────────────────────────────────────────────
-
+    // ───────────────────────────────
+    // Update weight progress
+    // ───────────────────────────────
     private void handleProgressUpdate() {
         String updateStr = etWeightUpdate.getText().toString().trim();
         if (updateStr.isEmpty()) {
@@ -363,7 +355,7 @@ public class FitnessGoalFragment extends Fragment {
 
                     Map<String, Object> updateMap = new HashMap<>();
                     updateMap.put("weightGoalDiff", newWeightDiff);
-
+                    // Points logic
                     double percentChangeThisUpdate = (weightUpdate / originalGoal) * 100;
                     int pointsEarned = Math.round((float) percentChangeThisUpdate);
 
@@ -385,11 +377,9 @@ public class FitnessGoalFragment extends Fragment {
                         Toast.makeText(getContext(), "Error accessing Firestore", Toast.LENGTH_SHORT).show());
     }
 
-
-    // ─────────────────────────────────────────────────────────────
-    // AWARD POINTS
-    // ─────────────────────────────────────────────────────────────
-
+    // ───────────────────────────────
+    // Award points for progress
+    // ───────────────────────────────
     private void awardPoints(String uid, int pointsToAdd) {
         DocumentReference userRef = db.collection("users").document(uid);
 

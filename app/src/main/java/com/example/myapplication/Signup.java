@@ -38,21 +38,28 @@ import java.util.Map;
 
 public class Signup extends AppCompatActivity {
 
-
+    // Input fields for user email, password, and name
     TextInputEditText editTextEmail, editTextPassword, editTextName;
+    // Button to trigger registration
     Button buttonReg;
+    // Firebase Authentication instance
     FirebaseAuth mAuth;
+    // TextView for switching to login screen
     TextView textView;
 
+    // Firestore database instance
     FirebaseFirestore fStore;
+    // Stores the current user's ID after registration
     String userID;
 
 
     @Override
     public void onStart() {
         super.onStart();
+        // Check if a user is already logged in
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
+            // If logged in, navigate to Login activity and finish current one
             Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
             finish();
@@ -64,110 +71,123 @@ public class Signup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Enable edge-to-edge display for the activity
         EdgeToEdge.enable(this);
+        // Set the layout for the signup activity
         setContentView(R.layout.activity_signup);
+        // Adjust padding for system bars (status/navigation bars)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
 
-
         });
 
-    Button backbutton_signup = findViewById(R.id.backbutton_signup);
-    backbutton_signup.setOnClickListener(view -> {
-         Intent intent = new Intent(Signup.this, MainActivity.class);
-         startActivity(intent);
-
-    });
-
-
-    //Sign in Using Email and Password
-
-    mAuth = FirebaseAuth.getInstance();
-    fStore = FirebaseFirestore.getInstance();
-    editTextEmail = findViewById(R.id.email_signup);
-    editTextPassword = findViewById(R.id.password_signup);
-    editTextName = findViewById(R.id.name_signup);
-    buttonReg = findViewById(R.id.signup_signup);
-    textView = findViewById(R.id.createtxt_signup);
-    textView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(getApplicationContext(), Login.class);
+        // Find and setup back button to return to MainActivity
+        Button backbutton_signup = findViewById(R.id.backbutton_signup);
+        backbutton_signup.setOnClickListener(view -> {
+            Intent intent = new Intent(Signup.this, MainActivity.class);
             startActivity(intent);
-            finish();
-        }
-    });
+        });
 
-    buttonReg.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            String email, password, name;
-            email = String.valueOf(editTextEmail.getText());
-            password = String.valueOf(editTextPassword.getText());
-            name = String.valueOf(editTextName.getText());
+        // Initialize FirebaseAuth and Firestore instances
+        mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
 
+        // Bind UI elements to variables
+        editTextEmail = findViewById(R.id.email_signup);
+        editTextPassword = findViewById(R.id.password_signup);
+        editTextName = findViewById(R.id.name_signup);
+        buttonReg = findViewById(R.id.signup_signup);
+        textView = findViewById(R.id.createtxt_signup);
 
-            if (TextUtils.isEmpty(email)){
-                Toast.makeText(Signup.this, "Enter Email: ", Toast.LENGTH_SHORT).show();
-                return;
+        // Set click listener for TextView to navigate to Login activity
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), Login.class);
+                startActivity(intent);
+                finish();
             }
-            if (TextUtils.isEmpty(password)){
-                Toast.makeText(Signup.this, "Enter Password: ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(name)){
-                Toast.makeText(Signup.this, "Enter Name: ", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        });
 
+        // Set click listener for registration button
+        buttonReg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get input values from text fields
+                String email, password, name;
+                email = String.valueOf(editTextEmail.getText());
+                password = String.valueOf(editTextPassword.getText());
+                name = String.valueOf(editTextName.getText());
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(Signup.this, "Account Created.",
-                                        Toast.LENGTH_SHORT).show();
-                                userID = mAuth.getCurrentUser().getUid();
-                                DocumentReference documentReference = fStore.collection("users").document(userID);
-                                Map<String, Object> user = new HashMap<>();
-                                user.put("email", email);
-                                user.put("points", 0);
-                                user.put("name", name);
+                // Check if email is empty, show message if true
+                if (TextUtils.isEmpty(email)){
+                    Toast.makeText(Signup.this, "Enter Email: ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Check if password is empty, show message if true
+                if (TextUtils.isEmpty(password)){
+                    Toast.makeText(Signup.this, "Enter Password: ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Check if name is empty, show message if true
+                if (TextUtils.isEmpty(name)){
+                    Toast.makeText(Signup.this, "Enter Name: ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
+                // Attempt to create user with email and password in FirebaseAuth
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Notify user that account was created successfully
+                                    Toast.makeText(Signup.this, "Account Created.",
+                                            Toast.LENGTH_SHORT).show();
+                                    // Get the new user's unique ID
+                                    userID = mAuth.getCurrentUser().getUid();
+                                    // Reference to the Firestore document for this user
+                                    DocumentReference documentReference = fStore.collection("users").document(userID);
+                                    // Create a map of user info to save in Firestore
+                                    Map<String, Object> user = new HashMap<>();
+                                    user.put("email", email);
+                                    user.put("points", 0);
+                                    user.put("name", name);
 
-                                documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Log.d(TAG, "onSuccess: user profile is created for" + userID);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(TAG, "onFailure: " + e.toString());
-                                    }
-                                });
-                                Intent intent = new Intent(getApplicationContext(), Home.class);
-                                startActivity(intent);
-                                finish();
+                                    // Save user info in Firestore document
+                                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            // Log success message on profile creation
+                                            Log.d(TAG, "onSuccess: user profile is created for" + userID);
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Log failure message on profile creation
+                                            Log.d(TAG, "onFailure: " + e.toString());
+                                        }
+                                    });
+                                    // Navigate to Home activity and finish signup activity
+                                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                                    startActivity(intent);
+                                    finish();
 
+                                }
+
+                                else {
+                                    // If sign in fails, show an error message to the user
+                                    Toast.makeText(Signup.this, "Authentication Failed.",
+                                            Toast.LENGTH_SHORT).show();
+
+                                }
                             }
+                        });
 
-                            else {
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(Signup.this, "Authentication Failed.",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
-                        }
-                    });
-
-        }
-    });
+            }
+        });
 
     }
 }
-
-

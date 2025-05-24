@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // ⬇ If not logged in, continue showing the splash layout
+        // If not logged in, continue showing the splash layout
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        // Once the login/signup button is pressed, create an intent to send the user to the right activity
         Button loginButton = findViewById(R.id.login_splash);
         loginButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, Login.class);

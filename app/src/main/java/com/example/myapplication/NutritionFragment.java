@@ -14,9 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.MealAdapter;
-import com.example.myapplication.MealEntry;
-import com.example.myapplication.R;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,20 +34,32 @@ import java.util.Map;
 
 public class NutritionFragment extends Fragment {
 
+    // Input fields
     private EditText etMealName, etCalories, etNotes;
+
+    // Buttons
     private Button btnSubmit, btnFinishDay;
+
+    // TextView to display total calories
     private TextView tvTotalCalories;
+
+    // RecyclerView and Adapter for displaying meal history
     private RecyclerView recyclerView;
     private MealAdapter mealAdapter;
+
+    // List to store meal entries
     private List<MealEntry> mealList = new ArrayList<>();
 
+    // Firebase instances
     private FirebaseFirestore db;
     private FirebaseUser user;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate layout
         View view = inflater.inflate(R.layout.fragment_nutrition, container, false);
 
+        // Initialize UI elements
         etMealName = view.findViewById(R.id.meal_name);
         etCalories = view.findViewById(R.id.calorie_input);
         etNotes = view.findViewById(R.id.extra_notes);
@@ -59,30 +68,36 @@ public class NutritionFragment extends Fragment {
         tvTotalCalories = view.findViewById(R.id.tv_total_calories);
         recyclerView = view.findViewById(R.id.meal_history_recycler);
 
+        // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mealAdapter = new MealAdapter(mealList);
         recyclerView.setAdapter(mealAdapter);
 
+        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Load data if user is authenticated
         if (user != null) {
             loadMealHistory();
             loadTodayCalories(user.getUid());
             checkIfFinishedAndDisable(user.getUid());
-
         }
+
+        // Finish day button logic
         btnFinishDay.setOnClickListener(v -> {
             if (user != null) {
                 evaluateNutritionGoalAndAwardPoints(user.getUid());
             }
         });
 
+        // Submit button logic
         btnSubmit.setOnClickListener(v -> {
             String name = etMealName.getText().toString().trim();
             String caloriesStr = etCalories.getText().toString().trim();
             String notes = etNotes.getText().toString().trim();
 
+            // Validate input
             if (name.isEmpty() || caloriesStr.isEmpty()) {
                 Toast.makeText(getContext(), "Meal name and calories are required", Toast.LENGTH_SHORT).show();
                 return;
@@ -96,9 +111,11 @@ public class NutritionFragment extends Fragment {
                 return;
             }
 
+            // Create meal entry
             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
             MealEntry entry = new MealEntry(name, calories, notes, timestamp);
 
+            // Store meal in Firestore
             db.collection("users")
                     .document(user.getUid())
                     .collection("meals")
@@ -109,10 +126,12 @@ public class NutritionFragment extends Fragment {
                         mealAdapter.notifyItemInserted(0);
                         recyclerView.scrollToPosition(0);
 
+                        // Clear input fields
                         etMealName.setText("");
                         etCalories.setText("");
                         etNotes.setText("");
 
+                        // Update calorie total and award points
                         updateDailyCalories(user.getUid(), calories);
                         awardPoints(user.getUid(), 10);
                     })
@@ -124,6 +143,7 @@ public class NutritionFragment extends Fragment {
         return view;
     }
 
+    // Load past meal entries from Firestore
     private void loadMealHistory() {
         db.collection("users")
                 .document(user.getUid())
@@ -140,6 +160,7 @@ public class NutritionFragment extends Fragment {
                 });
     }
 
+    // Load today's total calorie count
     private void loadTodayCalories(String uid) {
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
@@ -166,6 +187,7 @@ public class NutritionFragment extends Fragment {
                 });
     }
 
+    // Update daily calorie total in Firestore
     private void updateDailyCalories(String uid, int newCalories) {
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         DocumentReference dailyRef = db.collection("users")
@@ -185,13 +207,14 @@ public class NutritionFragment extends Fragment {
                     long updatedTotal = currentTotal + newCalories;
                     Map<String, Object> data = new HashMap<>();
                     data.put("totalCalories", updatedTotal);
-                    data.put("finishedDay", false); // Only gets overwritten if missing
+                    data.put("finishedDay", false); // Preserve existing value if present
                     transaction.set(dailyRef, data, SetOptions.merge());
                     return null;
                 }).addOnSuccessListener(unused -> loadTodayCalories(uid))
                 .addOnFailureListener(e -> Log.e("Firestore", "Daily calorie update failed", e));
     }
 
+    // Award points to the user
     private void awardPoints(String uid, int pointsToAdd) {
         DocumentReference userRef = db.collection("users").document(uid);
 
@@ -213,6 +236,8 @@ public class NutritionFragment extends Fragment {
             Log.e("NutritionFragment", "Failed to award points", e);
         });
     }
+
+    // Evaluate if the user met their goal and award bonus points
     private void evaluateNutritionGoalAndAwardPoints(String uid) {
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         DocumentReference userRef = db.collection("users").document(uid);
@@ -245,6 +270,7 @@ public class NutritionFragment extends Fragment {
                 int actualCalories = totalCaloriesLong.intValue();
                 int calorieDiff = Math.abs(actualCalories - recommendedCalories);
 
+                // Award points if within 100 calories of goal
                 if (goal.equalsIgnoreCase("cutting") || goal.equalsIgnoreCase("bulking")) {
                     if (calorieDiff <= 100) {
                         awardPoints(uid, 100);
@@ -254,7 +280,7 @@ public class NutritionFragment extends Fragment {
                     }
                 }
 
-                // Mark day as finished
+                // Mark the day as finished
                 calorieRef.update("finishedDay", true)
                         .addOnSuccessListener(aVoid -> {
                             Log.d("NutritionFragment", "Day marked as finished.");
@@ -264,6 +290,8 @@ public class NutritionFragment extends Fragment {
             });
         });
     }
+
+    // Disable input fields and submit button
     private void disableInputs() {
         etMealName.setEnabled(false);
         etCalories.setEnabled(false);
@@ -271,6 +299,7 @@ public class NutritionFragment extends Fragment {
         btnSubmit.setEnabled(false);
     }
 
+    // Check if day is already marked finished and disable UI accordingly
     private void checkIfFinishedAndDisable(String uid) {
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(new Date());
@@ -283,14 +312,9 @@ public class NutritionFragment extends Fragment {
             Boolean done = snap.getBoolean("finishedDay");
             if (done != null && done) {
                 disableInputs();
-                btnFinishDay.setEnabled(false);  // 🔒 Disable Finish Day
+                btnFinishDay.setEnabled(false);
             }
         });
     }
 
-
-
 }
-
-
-

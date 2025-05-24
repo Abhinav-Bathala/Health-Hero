@@ -25,37 +25,52 @@ import java.util.concurrent.TimeUnit;
 
 public class LeaderboardFragment extends Fragment {
 
+    // RecyclerView to display the leaderboard
     private RecyclerView recyclerView;
+    // Adapter for the leaderboard RecyclerView
     private LeaderboardAdapter adapter;
+    // List to hold leaderboard entries
     private List<LeaderboardEntry> leaderboardList = new ArrayList<>();
+    // Firebase Firestore instance
     private FirebaseFirestore db;
+    // TextView to show countdown to next leaderboard reset
     private TextView countdownTextView;
+    // Tag for logging
     private static final String TAG = "LeaderboardFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        // Initialize the RecyclerView from layout
         recyclerView = view.findViewById(R.id.leaderboardRecyclerView);
+        // Initialize the countdown TextView from layout
         countdownTextView = view.findViewById(R.id.countdownTextView);
-
+        // Set the layout manager for the RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // Initialize the adapter with the leaderboard list
         adapter = new LeaderboardAdapter(leaderboardList);
+        // Set the adapter to the RecyclerView
         recyclerView.setAdapter(adapter);
-
+        // Initialize Firestore instance
         db = FirebaseFirestore.getInstance();
-
+        // Check if the leaderboard needs to be reset
         checkLeaderboardReset();
 
         return view;
     }
 
+    // Fetch the leaderboard data from Firestore and update UI
     private void fetchLeaderboard() {
         db.collection("users")
                 .orderBy("points", Query.Direction.DESCENDING)
                 .limit(50)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // Clear the current list
                     leaderboardList.clear();
+
+                    // Add each document's data to the leaderboard list
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         String name = doc.getString("name");
                         Long points = doc.getLong("points");
@@ -63,55 +78,64 @@ public class LeaderboardFragment extends Fragment {
                             leaderboardList.add(new LeaderboardEntry(name, points));
                         }
                     }
+
+                    // Notify the adapter that the data has changed
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
+                    // Log and show error if leaderboard fetch fails
                     Log.e(TAG, "Failed to load leaderboard", e);
                     Toast.makeText(getContext(), "Failed to load leaderboard", Toast.LENGTH_SHORT).show();
                 });
     }
 
+    // Check when the leaderboard was last reset and decide if it should be reset
     private void checkLeaderboardReset() {
         DocumentReference configRef = db.collection("config").document("leaderboard");
 
         configRef.get().addOnSuccessListener(document -> {
             if (document.exists()) {
+                // Get the last reset timestamp
                 Timestamp lastReset = document.getTimestamp("lastResetDate");
+
                 if (lastReset != null) {
+                    // Calculate how many days have passed since the last reset
                     long daysPassed = TimeUnit.MILLISECONDS.toDays(
                             new Date().getTime() - lastReset.toDate().getTime()
                     );
 
+                    // Calculate how many days are left until the next reset
                     long daysUntilReset = 30 - daysPassed;
 
+                    // Show countdown or reset message based on time passed
                     if (daysUntilReset > 0) {
                         countdownTextView.setText("Leaderboard Reset: " + daysUntilReset + " Days");
                         fetchLeaderboard();
-                    }
-                    else if (daysPassed == 30){
+                    } else if (daysPassed == 30) {
                         countdownTextView.setText("Leaderboard Frozen! Season Over!");
-                    }
-                    else if (daysPassed > 30) {
+                    } else if (daysPassed > 30) {
                         countdownTextView.setText("Leaderboard reset! Next reset in 30 days.");
                         resetAllUserData(configRef);
                     }
                 }
             }
         }).addOnFailureListener(e -> {
+            // Log if fetching leaderboard config fails
             Log.e(TAG, "Failed to fetch leaderboard config", e);
         });
     }
 
+    // Reset all users' data and update leaderboard reset timestamp
     private void resetAllUserData(DocumentReference configRef) {
         db.collection("users").get().addOnSuccessListener(querySnapshot -> {
             for (DocumentSnapshot userDoc : querySnapshot.getDocuments()) {
                 DocumentReference userRef = userDoc.getReference();
 
-                // Reset points
+                // Reset user points to 0
                 userRef.update("points", 0)
                         .addOnFailureListener(e -> Log.e(TAG, "Failed to reset points for user " + userRef.getId(), e));
 
-                // Delete meals
+                // Delete all meals for the user
                 userRef.collection("meals").get()
                         .addOnSuccessListener(mealSnapshot -> {
                             for (DocumentSnapshot doc : mealSnapshot.getDocuments()) {
@@ -121,7 +145,7 @@ public class LeaderboardFragment extends Fragment {
                         })
                         .addOnFailureListener(e -> Log.e(TAG, "Failed to fetch meals for user " + userRef.getId(), e));
 
-                // Delete workouts
+                // Delete all workouts for the user
                 userRef.collection("workouts").get()
                         .addOnSuccessListener(workoutSnapshot -> {
                             for (DocumentSnapshot doc : workoutSnapshot.getDocuments()) {
@@ -141,6 +165,7 @@ public class LeaderboardFragment extends Fragment {
                     .addOnFailureListener(e -> Log.e(TAG, "Failed to update leaderboard reset timestamp", e));
 
         }).addOnFailureListener(e -> {
+            // Log and show error if user data couldn't be fetched for reset
             Log.e(TAG, "Failed to fetch users for reset", e);
             Toast.makeText(getContext(), "Failed to reset leaderboard", Toast.LENGTH_SHORT).show();
         });
