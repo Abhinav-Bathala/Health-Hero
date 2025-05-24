@@ -279,6 +279,8 @@ public class FitnessGoalFragment extends Fragment {
         userData.put("weightGoalDiff", (double) weightGoalDiff);
         userData.put("originalWeightGoalDiff", weightGoalDiff);
         userData.put("goalProgressPercent", 0.0);
+        userData.put("goalCompleted", false);
+
 
         db.collection("users").document(uid)
                 .set(userData, SetOptions.merge())
@@ -342,8 +344,15 @@ public class FitnessGoalFragment extends Fragment {
 
                     if (percentComplete >= 100) {
                         Toast.makeText(getContext(), "Set a new goal now and update your stats!", Toast.LENGTH_SHORT).show();
+
+                        // Mark the goal as completed in Firestore
+                        Map<String, Object> goalCompleteMap = new HashMap<>();
+                        goalCompleteMap.put("goalCompleted", true);
+                        db.collection("users").document(uid).set(goalCompleteMap, SetOptions.merge());
+
                         return;
                     }
+
 
                     // Apply update
                     double newWeightDiff = currentWeightDiff - weightUpdate;

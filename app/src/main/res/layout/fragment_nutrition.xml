@@ -158,7 +158,7 @@
             android:id="@+id/extraInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Note: Only press the button once the day is over to earn your nutrition points! "
+            android:text="Note: You will earn 100 points at the end of the day if you are within +/- 100 calories of your caloric target, so only press the button once the day is over to earn your nutrition points!"
             android:textSize="13sp"
             android:textStyle="italic"
             android:textColor="@color/text_secondary"

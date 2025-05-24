@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
             if (streakIncreased) {
                 displayAndSaveQuote(userRef);
             } else if (savedQuote != null && !savedQuote.isEmpty()) {
-                quoteText.setText("\"" + savedQuote + "\"");
+                quoteText.setText(savedQuote);
             } else {
                 quoteText.setText("- Keep pushing forward!");
             }

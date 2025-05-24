@@ -252,26 +252,13 @@ public class NutritionFragment extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "Outside the 100-calorie target. 0 points awarded.", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    // Fallback to performance-based for other goal types
-                    int tdee = userSnap.getLong("tdee") != null ? userSnap.getLong("tdee").intValue() : 0;
-                    int goalDelta = Math.abs(tdee - recommendedCalories);
-                    int actualDelta = Math.abs(tdee - actualCalories);
-
-                    float performanceRatio = Math.min(1f, (float) actualDelta / goalDelta);
-                    int pointsEarned = Math.round(performanceRatio * 100);
-
-                    awardPoints(uid, pointsEarned);
-                    Toast.makeText(getContext(), pointsEarned + " points awarded for today!", Toast.LENGTH_SHORT).show();
                 }
 
-                // Mark the day as finished either way
+                // Mark day as finished
                 calorieRef.update("finishedDay", true)
                         .addOnSuccessListener(aVoid -> {
                             Log.d("NutritionFragment", "Day marked as finished.");
-
                             disableInputs();
-
                         })
                         .addOnFailureListener(e -> Log.e("NutritionFragment", "Failed to mark day as finished", e));
             });
@@ -291,13 +278,16 @@ public class NutritionFragment extends Fragment {
                 .document(uid)
                 .collection("dailyCalories")
                 .document(today);
+
         calorieRef.get().addOnSuccessListener(snap -> {
-            Boolean done = snap.getBoolean("finisedDay");
+            Boolean done = snap.getBoolean("finishedDay");
             if (done != null && done) {
                 disableInputs();
+                btnFinishDay.setEnabled(false);  // 🔒 Disable Finish Day
             }
         });
     }
+
 
 
 }
