@@ -54,6 +54,13 @@
                     android:paddingBottom="12dp"
                     android:textColor="@color/text_primary" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="@android:color/white" />
+
                 <RadioGroup
                     android:id="@+id/goalRadioGroup"
                     android:layout_width="match_parent"
@@ -139,17 +146,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Activity Level:"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="12dp"
+                    android:layout_gravity="center"/>
+
+
 
                 <Spinner
                     android:id="@+id/spinnerActivityLevel"
                     android:layout_width="349dp"
                     android:layout_height="53dp"
-                    android:fontFamily="@font/anonymous_pro"
+                    android:fontFamily="@font/roboto_serif"
                     android:layout_marginBottom="8dp" />
 
                 <EditText
@@ -182,6 +192,7 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/card_background">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -194,7 +205,6 @@
                 android:paddingBottom="12dp"
                 android:textColor="@color/text_primary" />
 
-
             <TextView
                 android:id="@+id/tvRecommendation"
                 android:layout_width="wrap_content"
@@ -205,6 +215,8 @@
                 android:fontFamily="@font/roboto_serif"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"/>
+
+
         </androidx.cardview.widget.CardView>
 
         <!-- Initial Stats Card -->
@@ -264,6 +276,15 @@
                     android:paddingBottom="12dp"
                     android:textColor="@color/text_primary" />
 
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="@android:color/white" />
+
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -273,6 +294,7 @@
                     android:textStyle="bold"
                     android:layout_marginTop="4dp"
                     android:textColor="@color/text_primary"/>
+
 
                 <EditText
                     android:id="@+id/etWeightUpdate"
@@ -284,21 +306,25 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:layout_marginBottom="8dp"/>
 
+
                 <Button
                     android:id="@+id/btnUpdateProgress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Update Progress"
                     android:textStyle="bold"
+                    android:fontFamily="@font/aleo_medium"
                     android:backgroundTint="@color/accent_primary"
                     android:textColor="@android:color/white" />
+
+
 
                 <TextView
                     android:id="@+id/tvProgressPercent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Goal Progress: 0%"
-                    android:fontFamily="@font/aleo_medium"
+                    android:fontFamily="@font/roboto_serif"
                     android:textSize="16sp"
                     android:layout_marginTop="16dp"
                     android:textAlignment="center"

@@ -26,7 +26,7 @@
         android:layout_marginTop="8dp"
         android:textSize="16sp"
         android:textColor="@android:color/white"
-        android:fontFamily="@font/aleo_medium"
+        android:fontFamily="@font/roboto_serif"
         android:visibility="visible" />
 
     <View

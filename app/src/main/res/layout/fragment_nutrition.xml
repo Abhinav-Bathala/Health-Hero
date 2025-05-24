@@ -44,10 +44,18 @@
                     android:layout_height="wrap_content"
                     android:text="Calorie Intake Tracker"
                     android:fontFamily="@font/aleo_medium"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="8dp"
+                    android:layout_gravity="center"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="@android:color/white" />
 
                 <EditText
                     android:id="@+id/meal_name"
@@ -90,6 +98,7 @@
                     android:textStyle="bold"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="12dp"
+                    android:fontFamily="@font/aleo_medium"
                     android:backgroundTint="@color/accent_primary"
                     android:textColor="@color/text_primary" />
             </LinearLayout>
@@ -114,18 +123,26 @@
                     android:layout_height="wrap_content"
                     android:text="Meal History"
                     android:fontFamily="@font/aleo_medium"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="8dp"
+                    android:layout_gravity="center"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="18dp"
+                    android:background="@android:color/white" />
 
                 <TextView
                     android:id="@+id/tv_total_calories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Today's Calories: 0"
-                    android:fontFamily="@font/anonymous_pro"
-                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_serif"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="16dp" />
