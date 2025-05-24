@@ -391,8 +391,9 @@ public class FitnessGoalFragment extends Fragment {
                     transaction.update(userRef, "points", currentPoints + pointsToAdd);
                     return null;
                 }).addOnSuccessListener(unused ->
-                        Log.d("FitnessGoalFragment", pointsToAdd + " points awarded."))
+                        Toast.makeText(getContext(), pointsToAdd + " points awarded.", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Log.e("FitnessGoalFragment", "Failed to award points", e));
     }
+
 }
