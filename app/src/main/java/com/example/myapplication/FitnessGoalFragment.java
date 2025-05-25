@@ -52,20 +52,20 @@ public class FitnessGoalFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        goalRadioGroup     = view.findViewById(R.id.goalRadioGroup);
-        genderRadioGroup   = view.findViewById(R.id.genderRadioGroup);
-        etAge              = view.findViewById(R.id.etAge);
-        etHeight           = view.findViewById(R.id.etHeight);
-        etWeight           = view.findViewById(R.id.etWeight);
-        etWeightGoalDiff   = view.findViewById(R.id.etWeightGoalDiff);
-        etCaloricIntake    = view.findViewById(R.id.etCaloricIntake);
-        etWeightUpdate     = view.findViewById(R.id.etWeightUpdate);
+        goalRadioGroup = view.findViewById(R.id.goalRadioGroup);
+        genderRadioGroup = view.findViewById(R.id.genderRadioGroup);
+        etAge = view.findViewById(R.id.etAge);
+        etHeight = view.findViewById(R.id.etHeight);
+        etWeight  = view.findViewById(R.id.etWeight);
+        etWeightGoalDiff = view.findViewById(R.id.etWeightGoalDiff);
+        etCaloricIntake = view.findViewById(R.id.etCaloricIntake);
+        etWeightUpdate = view.findViewById(R.id.etWeightUpdate);
         spinnerActivityLevel = view.findViewById(R.id.spinnerActivityLevel);
-        btnSubmit            = view.findViewById(R.id.btnSubmit);
-        btnUpdateProgress    = view.findViewById(R.id.btnUpdateProgress);
-        tvRecommendation     = view.findViewById(R.id.tvRecommendation);
-        tvInitial            = view.findViewById(R.id.tvInitial);
-        tvProgressPercent    = view.findViewById(R.id.tvProgressPercent);
+        btnSubmit = view.findViewById(R.id.btnSubmit);
+        btnUpdateProgress = view.findViewById(R.id.btnUpdateProgress);
+        tvRecommendation = view.findViewById(R.id.tvRecommendation);
+        tvInitial = view.findViewById(R.id.tvInitial);
+        tvProgressPercent = view.findViewById(R.id.tvProgressPercent);
 
         db = FirebaseFirestore.getInstance();
 
@@ -113,10 +113,10 @@ public class FitnessGoalFragment extends Fragment {
             StringBuilder stats = new StringBuilder();
             Long ageVal        = documentSnapshot.getLong("age");
             Double heightVal   = documentSnapshot.getDouble("height");
-            Double weightVal   = documentSnapshot.getDouble("weight");
+            Double weightVal   = documentSnapshot.getDouble("originalWeight");
             String activity    = documentSnapshot.getString("activityLevel");
             String timeMsg     = documentSnapshot.getString("timeToReachGoal");
-            Double weightDiff  = documentSnapshot.getDouble("weightGoalDiff");
+            Double weightDiff  = documentSnapshot.getDouble("originalWeightGoalDiff");
 
             if (ageVal != null && heightVal != null && weightVal != null && activity != null) {
                 stats.append("Age: ").append(ageVal).append(" yrs\n")
@@ -239,6 +239,7 @@ public class FitnessGoalFragment extends Fragment {
         userData.put("age", age);
         userData.put("height", height);
         userData.put("weight", weight);
+        userData.put("originalWeight", weight); // initial weight
         userData.put("activityLevel", activityLevel);
         userData.put("tdee", (int) tdee);
         userData.put("recommendedCalories", recommendedCalories);
@@ -301,7 +302,7 @@ public class FitnessGoalFragment extends Fragment {
             }
 
             if (goalCompleted) {
-                Toast.makeText(getContext(), "Goal already completed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Goal already completed! Please make a new goal!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
