@@ -440,7 +440,7 @@ public class WorkoutFragment extends Fragment {
             case "Dips":
             case "Squats":
             case "Core":
-                return 1.0;
+                return 0.2;
 
             case "Bench Press":
                 return 2.0;
@@ -452,7 +452,7 @@ public class WorkoutFragment extends Fragment {
                 return 2.0;
 
             case "Walking":
-                return 1.0;
+                return 4.0;
 
             case "Joggling/Running":
             case "Hiking":
@@ -460,7 +460,7 @@ public class WorkoutFragment extends Fragment {
             case "Biking":
             case "Other Sports":
             case "Other Cardio":
-                return 2.0;
+                return 8.0;
 
             default:
                 return 1.0;
