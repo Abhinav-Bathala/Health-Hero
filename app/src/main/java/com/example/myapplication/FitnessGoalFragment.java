@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -20,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -37,26 +37,21 @@ public class FitnessGoalFragment extends Fragment {
 
     private FirebaseFirestore db;
 
-    // Constants for the activity level options used in the spinner
     private static final String[] ACTIVITY_OPTIONS = {
             "Sedentary",
             "Lightly Active",
             "Active",
             "Very Active"
     };
-    // Constructor linking layout
+
     public FitnessGoalFragment() {
         super(R.layout.fragment_fitness_goal);
     }
 
-    // ───────────────────────────────
-    // Fragment Lifecycle
-    // ───────────────────────────────
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Bind UI elements to variables
         goalRadioGroup     = view.findViewById(R.id.goalRadioGroup);
         genderRadioGroup   = view.findViewById(R.id.genderRadioGroup);
         etAge              = view.findViewById(R.id.etAge);
@@ -72,30 +67,22 @@ public class FitnessGoalFragment extends Fragment {
         tvInitial            = view.findViewById(R.id.tvInitial);
         tvProgressPercent    = view.findViewById(R.id.tvProgressPercent);
 
-        // Firestore instance
         db = FirebaseFirestore.getInstance();
 
-        // Setup activity level spinner with options
         ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
                 ACTIVITY_OPTIONS
         );
-        activityAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
+        activityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerActivityLevel.setAdapter(activityAdapter);
 
-        // Load saved user data from Firestore
         loadExistingData();
 
-        // Set button click handlers
         btnSubmit.setOnClickListener(v -> handleSubmit());
         btnUpdateProgress.setOnClickListener(v -> handleProgressUpdate());
     }
 
-    // ───────────────────────────────
-    // Load existing user data from Firestore
-    // ───────────────────────────────
     private void loadExistingData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -111,7 +98,6 @@ public class FitnessGoalFragment extends Fragment {
                 return;
             }
 
-            // Load and display recommendation if available
             Long tdeeVal = documentSnapshot.getLong("tdee");
             Long recCal  = documentSnapshot.getLong("recommendedCalories");
             String goal  = documentSnapshot.getString("goal");
@@ -124,7 +110,6 @@ public class FitnessGoalFragment extends Fragment {
                 tvRecommendation.setText("No recommendation data found. Please submit your goal.");
             }
 
-            // Load and display initial stats
             StringBuilder stats = new StringBuilder();
             Long ageVal        = documentSnapshot.getLong("age");
             Double heightVal   = documentSnapshot.getDouble("height");
@@ -144,13 +129,9 @@ public class FitnessGoalFragment extends Fragment {
                         stats.append("\nDesired Weight Change: Goal reached!");
                     } else {
                         double roundedWeightDiff = Math.round(Math.abs(weightDiff) * 10.0) / 10.0;
-                        String sign = weightDiff > 0 ? "+" : "-";
-                        stats.append("\nDesired Weight Change: ").append(sign).append(roundedWeightDiff).append(" kg");
+                        stats.append("\nDesired Weight Change: ").append(roundedWeightDiff).append(" kg");
                     }
                 }
-
-
-
             } else {
                 stats.append("No initial stats found.");
             }
@@ -158,7 +139,6 @@ public class FitnessGoalFragment extends Fragment {
             if (timeMsg != null) stats.append("\n\n").append(timeMsg);
             tvInitial.setText(stats.toString());
 
-            // Load and display progress percent
             Double originalGoal   = documentSnapshot.getDouble("originalWeightGoalDiff");
             Double currentGoalDiff= documentSnapshot.getDouble("weightGoalDiff");
             if (originalGoal != null && currentGoalDiff != null && originalGoal != 0) {
@@ -173,11 +153,7 @@ public class FitnessGoalFragment extends Fragment {
         );
     }
 
-    // ───────────────────────────────
-    // Submit fitness goal: calculate TDEE, recommend calories, save to Firestore
-    // ───────────────────────────────
     private void handleSubmit() {
-        // Validate user input
         int selectedGoalId = goalRadioGroup.getCheckedRadioButtonId();
         int selectedGenderId = genderRadioGroup.getCheckedRadioButtonId();
 
@@ -198,7 +174,7 @@ public class FitnessGoalFragment extends Fragment {
             Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        // Parse input safely
+
         int age;
         float height, weight, weightGoalDiff;
         try {
@@ -207,7 +183,6 @@ public class FitnessGoalFragment extends Fragment {
             weight = Float.parseFloat(weightStr);
             weightGoalDiff = Float.parseFloat(weightGoalDiffStr);
 
-            // Adjust sign: positive for bulking, negative for cutting
             if (goal.equals("Cutting")) {
                 weightGoalDiff = -Math.abs(weightGoalDiff);
             } else if (goal.equals("Bulking")) {
@@ -218,7 +193,6 @@ public class FitnessGoalFragment extends Fragment {
             return;
         }
 
-        // Calculate BMR and TDEE
         double bmr = gender.equals("Male")
                 ? 10 * weight + 6.25 * height - 5 * age + 5
                 : 10 * weight + 6.25 * height - 5 * age - 161;
@@ -242,12 +216,13 @@ public class FitnessGoalFragment extends Fragment {
 
         double tdee = bmr * activityMultiplier;
         int recommendedCalories = goal.equals("Bulking") ? (int) (tdee + 500) : (int) (tdee - 500);
-        double daysToReachGoal = (weightGoalDiff * 7700) / 500;
+
+        double daysToReachGoal = (Math.abs(weightGoalDiff) * 7700) / 500;
         String timeToReachGoal = "It should take approximately " + Math.round(daysToReachGoal) + " days to reach your weight goal in a healthy manner.";
+
         String message = "Your estimated Total Daily Energy Expenditure: " +
                 (int) tdee + " kcal/day\n" +
                 "Recommended Intake for " + goal + ": " + recommendedCalories + " kcal/day";
-
 
         tvRecommendation.setText(message);
 
@@ -274,7 +249,6 @@ public class FitnessGoalFragment extends Fragment {
         userData.put("goalProgressPercent", 0.0);
         userData.put("goalCompleted", false);
 
-
         db.collection("users").document(uid)
                 .set(userData, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
@@ -285,9 +259,6 @@ public class FitnessGoalFragment extends Fragment {
                         Toast.makeText(getContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    // ───────────────────────────────
-    // Update weight progress
-    // ───────────────────────────────
     private void handleProgressUpdate() {
         String updateStr = etWeightUpdate.getText().toString().trim();
         if (updateStr.isEmpty()) {
@@ -310,89 +281,89 @@ public class FitnessGoalFragment extends Fragment {
         }
 
         String uid = user.getUid();
-        db.collection("users").document(uid).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (!documentSnapshot.exists()) {
-                        Toast.makeText(getContext(), "No goal data found to update", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    Double currentWeightDiff = documentSnapshot.getDouble("weightGoalDiff");
-                    Double originalGoal = documentSnapshot.getDouble("originalWeightGoalDiff");
-
-                    if (currentWeightDiff == null) return;
-
-                    // Initialize originalGoal if null
-                    if (originalGoal == null) {
-                        originalGoal = currentWeightDiff;
-                        Map<String, Object> originSet = new HashMap<>();
-                        originSet.put("originalWeightGoalDiff", originalGoal);
-                        db.collection("users").document(uid).set(originSet, SetOptions.merge());
-                    }
-
-                    // Check if already completed
-                    double percentComplete = 100 * (originalGoal - currentWeightDiff) / originalGoal;
-                    percentComplete = Math.max(0, Math.min(100, percentComplete));
-
-                    if (percentComplete >= 100) {
-                        Toast.makeText(getContext(), "Set a new goal now and update your stats!", Toast.LENGTH_SHORT).show();
-
-                        // Mark the goal as completed in Firestore
-                        Map<String, Object> goalCompleteMap = new HashMap<>();
-                        goalCompleteMap.put("goalCompleted", true);
-                        db.collection("users").document(uid).set(goalCompleteMap, SetOptions.merge());
-
-                        return;
-                    }
-
-
-                    // Apply update
-                    double newWeightDiff = currentWeightDiff - weightUpdate;
-                    double updatedPercent = 100 * (originalGoal - newWeightDiff) / originalGoal;
-                    updatedPercent = Math.max(0, Math.min(100, updatedPercent));
-
-                    tvProgressPercent.setText(String.format("Goal Progress: %.1f%%", updatedPercent));
-
-                    Map<String, Object> updateMap = new HashMap<>();
-                    updateMap.put("weightGoalDiff", newWeightDiff);
-                    // Points logic
-                    double percentChangeThisUpdate = (weightUpdate / originalGoal) * 100;
-                    int pointsEarned = Math.round((float) percentChangeThisUpdate);
-
-                    db.collection("users").document(uid)
-                            .set(updateMap, SetOptions.merge())
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(getContext(),
-                                        "Progress updated! Remaining: " + newWeightDiff + " kg",
-                                        Toast.LENGTH_SHORT).show();
-                                awardPoints(uid, pointsEarned);
-                            })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(getContext(),
-                                            "Update failed: " + e.getMessage(),
-                                            Toast.LENGTH_SHORT).show());
-
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Error accessing Firestore", Toast.LENGTH_SHORT).show());
-    }
-
-    // ───────────────────────────────
-    // Award points for progress
-    // ───────────────────────────────
-    private void awardPoints(String uid, int pointsToAdd) {
         DocumentReference userRef = db.collection("users").document(uid);
 
-        db.runTransaction(transaction -> {
-                    DocumentSnapshot snapshot = transaction.get(userRef);
-                    long currentPoints = snapshot.contains("points") && snapshot.getLong("points") != null
-                            ? snapshot.getLong("points") : 0;
-                    transaction.update(userRef, "points", currentPoints + pointsToAdd);
-                    return null;
-                }).addOnSuccessListener(unused ->
-                        Toast.makeText(getContext(), pointsToAdd + " points awarded.", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e ->
-                        Log.e("FitnessGoalFragment", "Failed to award points", e));
-    }
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Toast.makeText(getContext(), "User data not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            Double currentWeightObj = documentSnapshot.getDouble("weight");
+            Double currentGoalDiffObj = documentSnapshot.getDouble("weightGoalDiff");
+            Double originalGoalObj = documentSnapshot.getDouble("originalWeightGoalDiff");
+            String goal = documentSnapshot.getString("goal");
+            Boolean goalCompleted = documentSnapshot.getBoolean("goalCompleted");
+
+            if (currentWeightObj == null || currentGoalDiffObj == null || originalGoalObj == null || goal == null || goalCompleted == null) {
+                Toast.makeText(getContext(), "Incomplete user data", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (goalCompleted) {
+                Toast.makeText(getContext(), "Goal already completed!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double currentWeight = currentWeightObj;
+            double currentGoalDiff = currentGoalDiffObj;
+            double originalGoal = originalGoalObj;
+
+            double newWeightDiff;
+            double newWeight;
+
+            // Correct the weight difference and weight update based on goal type
+            if ("Cutting".equals(goal)) {
+                // For cutting, weightGoalDiff is negative and moves toward zero by adding positive weight lost
+                newWeightDiff = currentGoalDiff + weightUpdate;
+                newWeight = currentWeight - weightUpdate;
+            } else if ("Bulking".equals(goal)) {
+                // For bulking, weightGoalDiff is positive and moves toward zero by subtracting positive weight gained
+                newWeightDiff = currentGoalDiff - weightUpdate;
+                newWeight = currentWeight + weightUpdate;
+            } else {
+                // Default fallback, treat as bulking style
+                newWeightDiff = currentGoalDiff - weightUpdate;
+                newWeight = currentWeight + weightUpdate;
+            }
+
+            // Clamp newWeightDiff to zero if overshoot occurs
+            if ((originalGoal < 0 && newWeightDiff > 0) || (originalGoal > 0 && newWeightDiff < 0)) {
+                newWeightDiff = 0;
+            }
+
+            double progressPercent = 0;
+            if (originalGoal != 0) {
+                progressPercent = 100.0 * (originalGoal - newWeightDiff) / originalGoal;
+                // Clamp to [0, 100]
+                progressPercent = Math.max(0, Math.min(100, progressPercent));
+            }
+
+            boolean completed = Math.abs(newWeightDiff) < 0.5;  // Consider goal completed if within 0.5 kg
+
+            // Points awarding logic:
+            // Award 100 points once when goal is completed
+            // You can add logic for partial progress points here if desired
+
+            Map<String, Object> updateData = new HashMap<>();
+            updateData.put("weightGoalDiff", newWeightDiff);
+            updateData.put("weight", newWeight);
+            updateData.put("goalProgressPercent", progressPercent);
+
+            if (completed && !goalCompleted) {
+                updateData.put("goalCompleted", true);
+                updateData.put("points", FieldValue.increment(100)); // add 100 points on completion
+                Toast.makeText(getContext(), "Congratulations! Goal completed! 100 points awarded.", Toast.LENGTH_LONG).show();
+            }
+
+            userRef.set(updateData, SetOptions.merge()).addOnSuccessListener(aVoid -> {
+                Toast.makeText(getContext(), "Progress updated successfully", Toast.LENGTH_SHORT).show();
+                loadExistingData();  // Refresh UI
+                etWeightUpdate.setText("");
+            }).addOnFailureListener(e ->
+                    Toast.makeText(getContext(), "Failed to update progress: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        }).addOnFailureListener(e ->
+                Toast.makeText(getContext(), "Failed to fetch user data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
 }
