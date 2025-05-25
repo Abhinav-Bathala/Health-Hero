@@ -4,6 +4,7 @@
         <item>Bodyweight</item>
         <item>Powerlifting</item>
         <item>Cardio</item>
+        <item>Bodybuilding</item>
     </string-array>
 
     <string-array name="bodyweight_exercises">
@@ -29,6 +30,14 @@
         <item>Biking</item>
         <item>Other Sports</item>
         <item>Other Cardio</item>
+    </string-array>
+
+    <string-array name="bodybuilding_exercises">
+        <item>Arms</item>
+        <item>Weighted Core</item>
+        <item>Chest</item>
+        <item>Back</item>
+        <item>Legs</item>
     </string-array>
 
 

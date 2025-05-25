@@ -29,7 +29,7 @@ public class WorkoutFragment extends Fragment {
     // NumberPicker for duration (cardio)
     private NumberPicker durationPicker;
 
-    // Spinner for workout category (bodyweight, powerlifting, cardio)
+    // Spinner for workout category (bodyweight, powerlifting, cardio, bodybuilding)
     private Spinner categorySelector, workoutSelector;
     // NumberPickers for reps and sets
     private NumberPicker repsPicker, setsPicker;
@@ -127,9 +127,8 @@ public class WorkoutFragment extends Fragment {
         );
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySelector.setAdapter(categoryAdapter);
+        categorySelector.setSelection(0); // triggers onItemSelected
 
-        // Set default workout options (bodyweight)
-        updateWorkoutSpinner(R.array.bodyweight_exercises);
 
         // Change workout spinner and input fields when category changes
         categorySelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -152,6 +151,7 @@ public class WorkoutFragment extends Fragment {
                     case 0: arrayRes = R.array.bodyweight_exercises; break;
                     case 1: arrayRes = R.array.powerlifting_exercises; break;
                     case 2: arrayRes = R.array.cardio_exercises; break;
+                    case 3: arrayRes = R.array.bodybuilding_exercises; break;
                     default: arrayRes = R.array.bodyweight_exercises;
                 }
 
@@ -209,7 +209,8 @@ public class WorkoutFragment extends Fragment {
 
             // Build workout entry string
             workoutEntry = "\t" + workoutType + " - Duration: " + duration + " min" +
-                    (convertToPoints ? ", Points: " + points : "");
+                    (convertToPoints ? "\nPoints: " + points : "");
+
         } else {
             // Get reps and sets for strength workout
             int reps = repsPicker.getValue();
@@ -221,7 +222,8 @@ public class WorkoutFragment extends Fragment {
 
             // Build workout entry string
             workoutEntry = "\t" + workoutType + " - Reps: " + reps + ", Sets: " + sets +
-                    (convertToPoints ? ", Points: " + points : "");
+                    (convertToPoints ? "\nPoints: " + points : "");
+
         }
 
         // Add points to total
@@ -461,6 +463,18 @@ public class WorkoutFragment extends Fragment {
             case "Other Sports":
             case "Other Cardio":
                 return 8.0;
+
+
+            case "Arms":
+            case "Weighted Core":
+                return 0.5;
+
+            case "Chest":
+            case "Back":
+                return 1.0;
+
+            case "Legs":
+                return 2.0;
 
             default:
                 return 1.0;

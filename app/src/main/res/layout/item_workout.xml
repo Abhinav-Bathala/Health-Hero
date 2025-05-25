@@ -15,21 +15,24 @@
 
         <TextView
             android:id="@+id/workoutName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Workout Description"
+            android:layout_width="353dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="36dp"
             android:fontFamily="@font/roboto_serif"
-            android:textSize="16sp"
+            android:text="Workout Description"
             android:textColor="@color/text_primary"
-            android:layout_alignParentStart="true"/>
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:src="@android:drawable/ic_delete"
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+
+            android:background="?attr/selectableItemBackground"
             android:contentDescription="Delete workout"
-            android:background="?attr/selectableItemBackground"/>
+            android:src="@android:drawable/ic_delete" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -344,7 +344,6 @@ public class FitnessGoalFragment extends Fragment {
 
             // Points awarding logic:
             // Award 100 points once when goal is completed
-            // You can add logic for partial progress points here if desired
 
             Map<String, Object> updateData = new HashMap<>();
             updateData.put("weightGoalDiff", newWeightDiff);
