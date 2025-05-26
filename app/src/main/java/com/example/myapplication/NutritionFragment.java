@@ -133,7 +133,7 @@ public class NutritionFragment extends Fragment {
 
                         // Update calorie total and award points
                         updateDailyCalories(user.getUid(), calories);
-                        awardPoints(user.getUid(), 10);
+                        awardPoints(user.getUid(), 1);
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(getContext(), "Failed to log meal", Toast.LENGTH_SHORT).show()
