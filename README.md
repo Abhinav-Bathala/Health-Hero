@@ -23,7 +23,7 @@ Based on these factors, points will be awarded and the total will be displayed o
 # Installation  
 
 All the relevant libraries and packages are installed/imported through android studio. 
-Access to firebase is not restricted as "google-services.json" is file is public in this repository.
+Access to firebase is not restricted as "google-services.json" is file that is public in this repository.
 
 # Support 
 
