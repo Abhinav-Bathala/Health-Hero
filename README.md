@@ -1,6 +1,6 @@
 # HealthHero 
 
-HealthHero is an Android mobile application that allows users to compete against each other in factors related to fitness and well-being
+HealthHero is an Android mobile application that allows users to compete against each other in factors related to fitness and well-being.
 
 # Features
 
