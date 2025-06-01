@@ -25,6 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * Login activity for authenticating users via Firebase.
+ * Allows users to sign in using email and password,
+ * and redirects to Home if already signed in.
+ */
 public class Login extends AppCompatActivity {
 
     // UI elements
@@ -35,6 +40,10 @@ public class Login extends AppCompatActivity {
     TextView textView;
     Button backbutton_login;
 
+    /**
+     * Called when the activity becomes visible to the user.
+     * Redirects to Home if the user is already signed in.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -49,6 +58,13 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the activity is starting.
+     * Sets up UI elements, Firebase authentication, and event listeners.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this contains the data it most recently supplied.
+     */
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +126,11 @@ public class Login extends AppCompatActivity {
                 // Attempt to sign in with email and password
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            /**
+                             * Called when sign-in attempt is complete.
+                             *
+                             * @param task Task containing the result of the sign-in attempt
+                             */
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 // Hide progress bar

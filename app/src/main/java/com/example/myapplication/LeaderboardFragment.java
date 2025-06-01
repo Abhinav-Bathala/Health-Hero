@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Fragment displaying the leaderboard. Handles leaderboard display, reset logic,
+ * and countdown to the next reset.
+ */
 public class LeaderboardFragment extends Fragment {
 
     // RecyclerView to display the leaderboard
@@ -38,6 +42,14 @@ public class LeaderboardFragment extends Fragment {
     // Tag for logging
     private static final String TAG = "LeaderboardFragment";
 
+    /**
+     * Inflates the fragment layout and sets up the leaderboard view and Firestore instance.
+     *
+     * @param inflater           LayoutInflater to inflate the layout
+     * @param container          ViewGroup container
+     * @param savedInstanceState Bundle containing previous state
+     * @return View object for the fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -60,7 +72,10 @@ public class LeaderboardFragment extends Fragment {
         return view;
     }
 
-    // Fetch the leaderboard data from Firestore and update UI
+    /**
+     * Fetches leaderboard data from Firestore, sorts it by points descending,
+     * and updates the RecyclerView adapter.
+     */
     private void fetchLeaderboard() {
         db.collection("users")
                 .orderBy("points", Query.Direction.DESCENDING)
@@ -89,7 +104,10 @@ public class LeaderboardFragment extends Fragment {
                 });
     }
 
-    // Check when the leaderboard was last reset and decide if it should be reset
+    /**
+     * Checks the last leaderboard reset date stored in Firestore and either
+     * displays a countdown, freezes the leaderboard, or resets it.
+     */
     private void checkLeaderboardReset() {
         DocumentReference configRef = db.collection("config").document("leaderboard");
 
@@ -125,7 +143,12 @@ public class LeaderboardFragment extends Fragment {
         });
     }
 
-    // Reset all users' data and update leaderboard reset timestamp
+    /**
+     * Resets all users' data including points, meals, and workouts.
+     * Updates the reset timestamp in Firestore and refreshes the leaderboard.
+     *
+     * @param configRef Reference to the leaderboard config document
+     */
     private void resetAllUserData(DocumentReference configRef) {
         db.collection("users").get().addOnSuccessListener(querySnapshot -> {
             for (DocumentSnapshot userDoc : querySnapshot.getDocuments()) {

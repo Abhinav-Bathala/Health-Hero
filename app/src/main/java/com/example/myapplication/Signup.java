@@ -52,7 +52,10 @@ public class Signup extends AppCompatActivity {
     // Stores the current user's ID after registration
     String userID;
 
-
+    /**
+     * Called when the activity is becoming visible to the user.
+     * Checks if a user is already logged in, and if so, navigates to the Login activity.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -67,7 +70,14 @@ public class Signup extends AppCompatActivity {
         }
     }
 
-
+     /**
+     * Called when the activity is first created.
+     * Sets up UI elements, initializes Firebase instances,
+     * configures button listeners for signup and navigation,
+     * and handles user registration logic.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +150,13 @@ public class Signup extends AppCompatActivity {
                 // Attempt to create user with email and password in FirebaseAuth
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            /**
+                             * Called when the createUserWithEmailAndPassword task completes.
+                             * If successful, creates a Firestore user document and navigates to the Home activity.
+                             * Otherwise, shows an authentication failure message.
+                             *
+                             * @param task The task containing result of the user creation attempt.
+                             */
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {

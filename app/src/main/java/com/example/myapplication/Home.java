@@ -22,6 +22,11 @@ import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * The Home activity serves as the main screen of the app after the user logs in.
+ * It includes a BottomNavigationView for switching between fragments such as
+ * Profile, Fitness Goals, Nutrition, Workouts, and Leaderboard.
+ */
 public class Home extends AppCompatActivity {
 
     // Bottom navigation view used to switch between fragments
@@ -40,6 +45,14 @@ public class Home extends AppCompatActivity {
     TextView textView;
     FirebaseUser user;
 
+    /**
+     * Called when the activity is starting. Initializes layout, sets up navigation,
+     * and loads the default fragment.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously
+     *                           being shut down then this Bundle contains the data it most
+     *                           recently supplied. Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

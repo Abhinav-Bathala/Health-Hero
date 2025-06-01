@@ -26,6 +26,11 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Fragment that handles setting and tracking user fitness goals.
+ * It allows users to input personal data, set weight goals, and track progress.
+ * Uses Firebase Firestore for data persistence and Firebase Auth for user identification.
+ */
 public class FitnessGoalFragment extends Fragment {
     // UI components
     private RadioGroup goalRadioGroup, genderRadioGroup;
@@ -43,11 +48,21 @@ public class FitnessGoalFragment extends Fragment {
             "Active",
             "Very Active"
     };
+    /**
+     * Constructor for FitnessGoalFragment.
+     * Initializes the fragment with the corresponding layout.
+     */
 
     public FitnessGoalFragment() {
         super(R.layout.fragment_fitness_goal);
     }
-
+    /**
+     * Called after the fragment's view has been created.
+     * Initializes UI components and sets up listeners and data.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -82,7 +97,10 @@ public class FitnessGoalFragment extends Fragment {
         btnSubmit.setOnClickListener(v -> handleSubmit());
         btnUpdateProgress.setOnClickListener(v -> handleProgressUpdate());
     }
-
+    /**
+     * Loads existing user fitness data from Firestore and populates the UI.
+     * Also displays TDEE and goal progress if available.
+     */
     private void loadExistingData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -152,7 +170,10 @@ public class FitnessGoalFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to load data", Toast.LENGTH_SHORT).show()
         );
     }
-
+    /**
+     * Handles user submission of their fitness goal and personal data.
+     * Validates input, calculates BMR and TDEE, and saves data to Firestore.
+     */
     private void handleSubmit() {
         int selectedGoalId = goalRadioGroup.getCheckedRadioButtonId();
         int selectedGenderId = genderRadioGroup.getCheckedRadioButtonId();
@@ -259,7 +280,10 @@ public class FitnessGoalFragment extends Fragment {
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
+    /**
+     * Handles progress updates based on weight change input by the user.
+     * Adjusts goal difference and progress, and awards points if the goal is completed.
+     */
     private void handleProgressUpdate() {
         String updateStr = etWeightUpdate.getText().toString().trim();
         if (updateStr.isEmpty()) {

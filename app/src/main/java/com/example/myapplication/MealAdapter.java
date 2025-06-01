@@ -12,17 +12,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * Adapter class for displaying a list of meal entries in a RecyclerView.
+ */
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder> {
 
     // List to store meal entries
     private List<MealEntry> mealList;
 
-    // Constructor to initialize the meal list
+    /**
+     * Constructor to initialize the adapter with a list of meal entries.
+     *
+     * @param mealList List of meals to be displayed
+     */
     public MealAdapter(List<MealEntry> mealList) {
         this.mealList = mealList;
     }
 
-    // Called when RecyclerView needs a new ViewHolder
+    /**
+     * Called when the RecyclerView needs a new ViewHolder.
+     *
+     * @param parent   The parent ViewGroup
+     * @param viewType The view type of the new View
+     * @return A new MealViewHolder that holds the layout for each meal item
+     */
     @NonNull
     @Override
     public MealViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,7 +45,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         return new MealViewHolder(view);
     }
 
-    // Binds data to the views in each ViewHolder
+    /**
+     * Called to bind data to a ViewHolder at the specified position.
+     *
+     * @param holder   The ViewHolder to bind data to
+     * @param position The position of the item within the dataset
+     */
     @Override
     public void onBindViewHolder(@NonNull MealViewHolder holder, int position) {
         // Get the meal at the current position
@@ -55,18 +73,29 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         holder.timestamp.setTextColor(ContextCompat.getColor(context, R.color.grey));
     }
 
-    // Returns the number of items in the data set
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     *
+     * @return The number of items
+     */
     @Override
     public int getItemCount() {
         return mealList.size();
     }
 
-    // ViewHolder class to hold view references
+    /**
+     * ViewHolder class to hold view references for a meal item.
+     */
     static class MealViewHolder extends RecyclerView.ViewHolder {
 
         // TextViews for displaying meal information
         TextView name, calories, notes, timestamp;
 
+        /**
+         * Constructor to initialize view references.
+         *
+         * @param itemView The view of the individual meal item
+         */
         public MealViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tvMealName);

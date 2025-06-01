@@ -1,5 +1,9 @@
 package com.example.myapplication;
 
+/**
+ * Model class representing a meal entry.
+ * Contains information about the meal name, calorie count, notes, and timestamp.
+ */
 public class MealEntry {
 
     // Name of the meal
@@ -14,10 +18,20 @@ public class MealEntry {
     // Timestamp of when the meal was recorded
     private String timestamp;
 
-    // Default constructor required for Firebase deserialization
+    /**
+     * Default no-argument constructor.
+     * Required for Firebase deserialization.
+     */
     public MealEntry() {}
 
-    // Constructor to initialize all meal entry fields
+    /**
+     * Constructor to initialize all fields of a meal entry.
+     *
+     * @param mealName  Name of the meal
+     * @param calories  Number of calories
+     * @param notes     Additional notes
+     * @param timestamp Timestamp of the entry
+     */
     public MealEntry(String mealName, int calories, String notes, String timestamp) {
         this.mealName = mealName;
         this.calories = calories;
@@ -25,15 +39,39 @@ public class MealEntry {
         this.timestamp = timestamp;
     }
 
-    // Getter for meal name
-    public String getMealName() { return mealName; }
+    /**
+     * Returns the name of the meal.
+     *
+     * @return Meal name
+     */
+    public String getMealName() {
+        return mealName;
+    }
 
-    // Getter for calories
-    public int getCalories() { return calories; }
+    /**
+     * Returns the number of calories.
+     *
+     * @return Calorie count
+     */
+    public int getCalories() {
+        return calories;
+    }
 
-    // Getter for notes
-    public String getNotes() { return notes; }
+    /**
+     * Returns any additional notes about the meal.
+     *
+     * @return Meal notes
+     */
+    public String getNotes() {
+        return notes;
+    }
 
-    // Getter for timestamp
-    public String getTimestamp() { return timestamp; }
+    /**
+     * Returns the timestamp when the meal was recorded.
+     *
+     * @return Timestamp string
+     */
+    public String getTimestamp() {
+        return timestamp;
+    }
 }

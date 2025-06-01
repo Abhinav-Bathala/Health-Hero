@@ -29,26 +29,37 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Fragment displaying user profile information including email, streak, weight,
+ * calorie target, ranking, welcome message, motivational quote, and points.
+ * Handles logout and real-time updates to fitness data.
+ */
 public class ProfileFragment extends Fragment {
 
-    // UI and Firebase
+    // UI elements
     private TextView emailTextView, streakText, weightText, calorieText, rankingText, welcomeText, quoteText, pointsText;
     private Button logoutButton;
+
+    // Firebase authentication and database
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore db;
-    private ListenerRegistration userDocListener; // 🔄 Real-time update listener
+
+    // Listener for real-time updates to user document
+    private ListenerRegistration userDocListener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        // Initialize Firebase Auth and Firestore
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        // Bind UI elements
+        // Bind UI elements to views
         emailTextView = view.findViewById(R.id.userEmail);
         logoutButton = view.findViewById(R.id.logout);
         streakText = view.findViewById(R.id.streakText);
@@ -60,16 +71,21 @@ public class ProfileFragment extends Fragment {
         pointsText = view.findViewById(R.id.pointsText);
 
         if (user != null) {
+            // Display user's email
             emailTextView.setText(user.getEmail());
+
+            // Load additional user info and setup listeners
             loadWelcomeMessage(user.getUid());
             checkAndUpdateStreak(user.getUid());
             startListeningToFitnessData(user.getUid());
             loadUserRanking(user.getEmail());
         } else {
+            // Redirect to login if user is not authenticated
             startActivity(new Intent(getActivity(), Login.class));
             getActivity().finish();
         }
 
+        // Setup logout button to sign out and navigate to login screen
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getActivity(), Login.class));
@@ -82,11 +98,16 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Remove Firestore real-time listener to avoid memory leaks
         if (userDocListener != null) {
             userDocListener.remove();
         }
     }
 
+    /**
+     * Loads and sets a personalized welcome message using the user's name from Firestore.
+     * @param uid The user's unique identifier.
+     */
     private void loadWelcomeMessage(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {
@@ -98,6 +119,11 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Checks the user's current streak, updates it if necessary,
+     * displays a motivational quote, and saves the quote if the streak increases.
+     * @param uid The user's unique identifier.
+     */
     private void checkAndUpdateStreak(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
         userRef.get().addOnSuccessListener(document -> {
@@ -114,6 +140,7 @@ public class ProfileFragment extends Fragment {
 
             boolean streakIncreased = false;
 
+            // Reset or increment streak based on last check-in date
             if (lastCheckIn == null || lastCheckIn.compareTo(yesterdayStr) < 0){
                 currentStreak = 1;
                 streakIncreased = true;
@@ -122,13 +149,16 @@ public class ProfileFragment extends Fragment {
                 streakIncreased = true;
             }
 
+            // Update Firestore with new streak info
             Map<String, Object> updates = new HashMap<>();
             updates.put("streakCount", currentStreak);
             updates.put("lastCheckInDate", todayStr);
             userRef.update(updates).addOnFailureListener(e -> Log.e("Streak", "Failed to update: " + e.getMessage()));
 
+            // Update UI streak display
             streakText.setText("Streak:\n" + currentStreak + " 🔥");
 
+            // Display a motivational quote
             if (streakIncreased) {
                 displayAndSaveQuote(userRef);
             } else if (savedQuote != null && !savedQuote.isEmpty()) {
@@ -140,6 +170,11 @@ public class ProfileFragment extends Fragment {
         }).addOnFailureListener(e -> Log.e("Streak", "Failed to load streak data", e));
     }
 
+    /**
+     * Selects a random motivational quote from a raw resource file,
+     * displays it in the UI, and saves it to Firestore for the current user.
+     * @param userRef Reference to the current user's Firestore document.
+     */
     private void displayAndSaveQuote(DocumentReference userRef) {
         try {
             InputStream inputStream = getResources().openRawResource(R.raw.motivationalquotes);
@@ -167,7 +202,11 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    // 🔄 Real-time listener to update fitness data when changed
+    /**
+     * Starts a real-time Firestore listener on the user's document
+     * to update fitness-related UI elements when data changes.
+     * @param uid The user's unique identifier.
+     */
     private void startListeningToFitnessData(String uid) {
         DocumentReference userRef = db.collection("users").document(uid);
 
@@ -195,6 +234,11 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads the user's leaderboard ranking based on points
+     * and updates the UI with their rank or "N/A" if not found.
+     * @param userEmail The user's email to identify them in the ranking list.
+     */
     private void loadUserRanking(String userEmail) {
         db.collection("users")
                 .orderBy("points", Query.Direction.DESCENDING)
