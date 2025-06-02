@@ -22,8 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Fragment to handle user workout logging, display workout history,
+ * and manage total points earned via workouts stored in Firebase Firestore.
+ */
 public class WorkoutFragment extends Fragment {
-
+    /**
+     * Model class representing a single workout entry, including description,
+     * points earned, and Firestore document ID.
+     */
     // Layout for duration picker (cardio)
     private LinearLayout durationLayout;
     // NumberPicker for duration (cardio)
@@ -57,7 +64,12 @@ public class WorkoutFragment extends Fragment {
         private String documentId;
 
         public WorkoutEntry() {}
-
+        /**
+         * Constructor to create a workout entry.
+         *
+         * @param workout The workout description.
+         * @param points The points earned.
+         */
         public WorkoutEntry(String workout, int points) {
             this.workout = workout;
             this.points = points;
@@ -83,7 +95,14 @@ public class WorkoutFragment extends Fragment {
             this.documentId = documentId;
         }
     }
-
+    /**
+     * Inflates the layout, initializes UI components, sets up listeners and loads existing workouts.
+     *
+     * @param inflater LayoutInflater to inflate views.
+     * @param container Parent view that this fragment's UI should be attached to.
+     * @param savedInstanceState Saved state, if available.
+     * @return Inflated view for this fragment.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -179,7 +198,11 @@ public class WorkoutFragment extends Fragment {
         return view;
     }
 
-    // Update the workout spinner with exercises from the selected array resource
+    /**
+     * Updates the workout spinner with exercise names from a given array resource ID.
+     *
+     * @param arrayResId Resource ID of the exercise array.
+     */
     private void updateWorkoutSpinner(int arrayResId) {
         ArrayAdapter<CharSequence> workoutAdapter = ArrayAdapter.createFromResource(
                 requireContext(), arrayResId, android.R.layout.simple_spinner_item);
@@ -187,7 +210,11 @@ public class WorkoutFragment extends Fragment {
         workoutSelector.setAdapter(workoutAdapter);
     }
 
-    // Handle workout submission
+
+    /**
+     * Handles logic for submitting a workout based on current inputs
+     * and optionally converting to points.
+     */
     private void submitWorkout() {
         // Get selected workout type
         String workoutType = workoutSelector.getSelectedItem().toString();
@@ -236,7 +263,11 @@ public class WorkoutFragment extends Fragment {
         addWorkoutToFirestore(entry);
     }
 
-    // Add a workout entry to Firestore
+    /**
+     * Adds a workout entry to Firestore and updates the UI and local state accordingly.
+     *
+     * @param entry The workout entry to add.
+     */
     private void addWorkoutToFirestore(WorkoutEntry entry) {
         // Get current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -291,7 +322,9 @@ public class WorkoutFragment extends Fragment {
                 });
     }
 
-    // Load workouts from Firestore and update UI
+    /**
+     * Loads existing workout entries from Firestore into the local list and updates the total points.
+     */
     private void loadWorkouts() {
         // Get current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -333,7 +366,12 @@ public class WorkoutFragment extends Fragment {
                 });
     }
 
-    // Delete a workout entry from Firestore and update UI
+    /**
+     * Deletes a workout entry from Firestore and updates local state and UI.
+     *
+     * @param entry    The workout entry to delete.
+     * @param position Position of the entry in the list.
+     */
     private void deleteWorkout(WorkoutEntry entry, int position) {
         // Get current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -381,7 +419,9 @@ public class WorkoutFragment extends Fragment {
                 });
     }
 
-    // Clear all workout history for the user
+    /**
+     * Clears all workout history from Firestore for the current user and resets local state.
+     */
     private void clearWorkoutHistory() {
         // Get current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -434,7 +474,12 @@ public class WorkoutFragment extends Fragment {
                 });
     }
 
-    // Get point multiplier for a given workout name
+    /**
+     * Returns the point multiplier for a given workout name.
+     *
+     * @param workoutName Name of the workout.
+     * @return Multiplier used to calculate points.
+     */
     private double getPointMultiplier(String workoutName) {
         switch (workoutName) {
             case "Push-ups":
