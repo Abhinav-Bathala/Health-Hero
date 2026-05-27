@@ -27,7 +27,7 @@ Access to firebase is not restricted as "google-services.json" is file that is p
 
 # Support 
 
-Email "abhinav.bathala@outlook.com" for any questions/concerns.
+Email "haiabhinav@outlook.com" for any questions/concerns.
 
 # Sources
 
